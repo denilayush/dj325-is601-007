@@ -7,10 +7,14 @@ a4 = [10.01, -12.22, 0.23, 19.20, -5.13, 3.12]
 def process_array(num, arr):
     print("\nProcessing Array({}): \n\n".format(num))
     print(arr)
-    total = 0.00
+    total = 0.0000
     # Note: use the arr variable; don't directly refer to a1-a4 variables
     # TODO add necessary code here for sum; every number must have two decimal places shown (i.e., 0.10, 0.01, 0.00)
-    print("\nThe total is {}:\n".format(total))
+    #dj325 09/21/2023
+    for i in arr:
+        total += i
+    total = round(total,2)
+    print("\nThe total is :{:.2f}\n".format(total))
 
 
 print("Problem 2")
