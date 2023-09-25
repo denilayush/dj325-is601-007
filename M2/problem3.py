@@ -15,10 +15,10 @@ def process_array(num, arr):
     for i in range(len(arr)):
         if type(arr[i]) is str :
             if int(arr[i])<0 :
-                arr[i] = str(int(arr[i])*-1)
+                arr[i] = type(str(int(arr[i])*-1)),str(int(arr[i])*-1)
         else:
             if arr[i] < 0:
-                arr[i] = arr[i]*-1
+                arr[i] = type(arr[i]*-1),arr[i]*-1
     print(arr,"\n")
 
 print("Problem 3")
