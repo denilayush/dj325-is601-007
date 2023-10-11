@@ -120,7 +120,7 @@ Cal = Mycalc()
 dj325 10/11/23
 test_method function is designed to test an add method of a class or module called Cal. Each test case is defined as a tuple with num1 and num2 as input arguments and z as the expected output. The @pytest.mark.parametrize decorator generates multiple test cases based on the provided parameters."""
 @pytest.mark.parametrize("num1,num2,z",[(2,2,4),(1000,1,1001),(100,-5,95),(1003,-1003,0)])
-def test_method(num1,num2,z):
+def test_num_add_num(num1,num2,z):
     assert z == Cal.add(num1,num2)
 
 
@@ -129,7 +129,7 @@ dj325 10/11/23
 this test includes ans + num test cases, and z is variable to check it with the functions output to original expected output
 """
 @pytest.mark.parametrize("num1,num2,z",[("ans",2,2),("ans",10002,10004),("ans",-4,10000),("ans",-10000,0)])
-def test_method2(num1,num2,z):
+def test_ans_add_num(num1,num2,z):
     assert z == Cal.add(num1,num2)
 
 """
@@ -137,7 +137,7 @@ dj325 10/11/23
 this test includes num subtact num test cases, and z is variable to check it with the functions output to original expected output
 """
 @pytest.mark.parametrize("num1,num2,z",[(2,2,0),(100,50,50),(-50,4,-54),(100100,100,100000)])
-def test_method3(num1,num2,z):
+def test_num_sub_num(num1,num2,z):
     assert z == Cal.sub(num1,num2)
 
 """
@@ -146,7 +146,7 @@ this test includes ans subtact num test cases, and z is variable to check it wit
 it will use ans of previous function test which is 100000
 """
 @pytest.mark.parametrize("num1,num2,z",[("ans",100002,-2),("ans",50,-52),("ans",-104,52),("ans",20,32)])
-def test_method4(num1,num2,z):
+def test_ans_sub_num(num1,num2,z):
     assert z == Cal.sub(num1,num2)
 
 """
@@ -155,7 +155,7 @@ this test includes number-mult-number test cases, and z is variable to check it 
 it will use ans check all the parameters for the mul function
 """
 @pytest.mark.parametrize("num1,num2,z",[(1,1,1),(2,2,4),(98,98,9604),(9604,-65,-624260)])
-def test_method5(num1,num2,z):
+def test_num_mul_num(num1,num2,z):
     assert z == Cal.mul(num1,num2)
 
 """
@@ -164,7 +164,7 @@ this test includes number-mult-number test cases, and z is variable to check it 
 it will use ans of previous function's output which is -624260
 """
 @pytest.mark.parametrize("num1,num2,z",[("ans",-1,624260),("ans",2,1248520),("ans",5,6242600),("ans",5,31213000)])
-def test_method6(num1,num2,z):
+def test_ans_mul_num(num1,num2,z):
     assert z == Cal.mul(num1,num2)
 
 """
@@ -172,7 +172,7 @@ dj325 10/11/23
 this test includes number-div-number test cases, and z is variable to check it with the functions output to original expected output
 """
 @pytest.mark.parametrize("num1,num2,z",[(1,1,1),(22,11,2),(98000,98,1000),(-600,-2,300)])
-def test_method7(num1,num2,z):
+def test_num_div_num(num1,num2,z):
     assert z == Cal.div(num1,num2)
 
 """
@@ -181,5 +181,5 @@ this test includes ans-div-number test cases, and z is variable to check it with
 It will use last task's ans which is 300
 """
 @pytest.mark.parametrize("num1,num2,z",[("ans",2,150),("ans",1,150),("ans",-2,-75),("ans",-75,1)])
-def test_method8(num1,num2,z):
+def test_ans_div_num(num1,num2,z):
     assert z == Cal.div(num1,num2)
