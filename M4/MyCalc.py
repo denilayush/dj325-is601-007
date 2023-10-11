@@ -177,7 +177,7 @@ def test_method7(num1,num2,z):
 
 """
 dj325 10/11/23
-this test includes number-div-number test cases, and z is variable to check it with the functions output to original expected output
+this test includes ans-div-number test cases, and z is variable to check it with the functions output to original expected output
 It will use last task's ans which is 300
 """
 @pytest.mark.parametrize("num1,num2,z",[("ans",2,150),("ans",1,150),("ans",-2,-75),("ans",-75,1)])
