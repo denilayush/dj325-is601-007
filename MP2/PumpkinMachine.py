@@ -172,20 +172,11 @@ class PumpkinMachine:
 
     def calculate_cost(self):
         # TODO add the calculation expression/logic for the inprogress_pumpkin
+        # dj325 10/12/23
         totalCost = 0
-        for i in self.pumpkins:
-            if i.name == self.inprogress_pumpkin[0]:
-                totalCost += i.cost
-                return
-        for i in range(1,len(self.inprogress_pumpkin)):
-            for j in self.face_stencils:
-                if j.name == self.inprogress_pumpkin[i].name:
-                    totalCost += j.cost
-            for j in self.face_stencils:
-                if j.name == self.extras[i].name:
-                    totalCost += j.cost 
-        print(totalCost)
-        return 10000  # <-- this needs to be changed
+        for i in self.inprogress_pumpkin:
+            totalCost += i.cost
+        return totalCost  # <-- this needs to be changed
 
     def run(self):
         try:
@@ -226,6 +217,7 @@ class PumpkinMachine:
         # Note: Stage/category refers to the enum towards the top. Make sure error messages are very clear to the user
         # handle OutOfStockException
             # show an appropriate message of what stage/category was out of stock
+        
         # handle NeedsCleaningException
             # prompt user to type "clean" to trigger clean_machine()
             # any other input is ignored
@@ -235,6 +227,15 @@ class PumpkinMachine:
         # handle ExceededRemainingChoicesException
             # show an appropriate message of which stage/category was exceeded
             # move to the next stage/category
+        # dj325 10/12/23
+        except ExceededRemainingChoicesException as e:
+            print(f"Choice for {self.currently_selecting.name} stage/category was exceeded")
+            if self.currently_selecting == STAGE.FaceStencil:
+                print("NEXT STAGE", self.currently_selecting.name)
+                self.currently_selecting = STAGE.Extra
+            elif self.currently_selecting == STAGE.Extra:
+                print("NEXT STAGE")
+                self.currently_selecting = STAGE.Pay
         # handle InvalidPaymentException
             # show an appropriate message
         except Exception as e:
