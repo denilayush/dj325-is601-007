@@ -157,11 +157,12 @@ class PumpkinMachine:
     def handle_pay(self, expected, total):
         if self.currently_selecting != STAGE.Pay:
             raise InvalidStageException
-        if total == str(expected):
+        if str(total) == str(expected):
             print("Thank you! Enjoy your Pumpkin and Happy Hallowween!")
             self.total_products += 1
-            self.total_sales += expected  # <-- TODO increment only if successful
-            # print(f"Total sales so far {self.total_sales}")
+            self.total_sales += int(expected)  # <-- TODO increment only if successful
+            # dj325 10/12/23
+            print(f"Total sales so far {self.total_sales}")
             self.reset()
         else:
             raise InvalidPaymentException
@@ -177,6 +178,7 @@ class PumpkinMachine:
         for i in self.inprogress_pumpkin:
             totalCost += i.cost
         return totalCost  # <-- this needs to be changed
+        
 
     def run(self):
         try:
@@ -199,8 +201,14 @@ class PumpkinMachine:
                 expected = self.calculate_cost()
                 # TODO show expected value as currency format
                 # TODO require total to be entered as currency format
-                total = input(
-                    f"Your total is {expected}, please enter the exact value.\n")
+                # dj325 10/12/23
+                expected = ("{:.2f}").format(expected)
+                total = ""
+                while len(total.rsplit('.')[-1]) != 2:
+                    total = input(
+                        f"Your total is ${expected}, please enter the exact value.\n")
+                    if len(total.rsplit('.')[-1]) != 2:
+                        print("Enter the cost in currency format with exactly 2 decimal points")
                 self.handle_pay(expected, total)
 
                 choice = input("What would you like to do? (order or quit)\n")
@@ -217,13 +225,25 @@ class PumpkinMachine:
         # Note: Stage/category refers to the enum towards the top. Make sure error messages are very clear to the user
         # handle OutOfStockException
             # show an appropriate message of what stage/category was out of stock
-        
+        # dj325 10/12/23
+        except OutOfStockException as e:
+            print(f"Selected Item in {self.currently_selecting.name} Stage is not in stock, Please select any other option")
         # handle NeedsCleaningException
             # prompt user to type "clean" to trigger clean_machine()
             # any other input is ignored
             # print a message whether or not the machine was cleaned
+        # dj325 10/12/23
+        except NeedsCleaningException as e:
+            command = ""
+            while command != "clean":
+                print(f"Machine needs cleaning please type \"clean\" to clean the machine:")
+                command = input("")
+            self.clean_machine()
         # handle InvalidChoiceException
             # show an appropriate message of what stage/category was the invalid choice was in
+        # dj325 10/12/23
+        except InvalidChoiceException as e:
+            print(f"Invalid Choice for {self.currently_selecting.name} Stage")
         # handle ExceededRemainingChoicesException
             # show an appropriate message of which stage/category was exceeded
             # move to the next stage/category
@@ -231,13 +251,15 @@ class PumpkinMachine:
         except ExceededRemainingChoicesException as e:
             print(f"Choice for {self.currently_selecting.name} stage/category was exceeded")
             if self.currently_selecting == STAGE.FaceStencil:
-                print("NEXT STAGE", self.currently_selecting.name)
                 self.currently_selecting = STAGE.Extra
+                print("NEXT STAGE", self.currently_selecting.name)
             elif self.currently_selecting == STAGE.Extra:
-                print("NEXT STAGE")
                 self.currently_selecting = STAGE.Pay
+                print("NEXT STAGE", self.currently_selecting.name)
         # handle InvalidPaymentException
             # show an appropriate message
+        except InvalidPaymentException as e:
+            print("Your Expected cost does not match with calculated cost")
         except Exception as e:
             # this is a default catch all, follow the steps above
             print(f"Something went wrong and I didn't handle it: {e}")
