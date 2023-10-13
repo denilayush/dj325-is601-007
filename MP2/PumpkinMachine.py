@@ -160,7 +160,7 @@ class PumpkinMachine:
         if str(total) == str(expected):
             print("Thank you! Enjoy your Pumpkin and Happy Hallowween!")
             self.total_products += 1
-            self.total_sales += int(expected)  # <-- TODO increment only if successful
+            self.total_sales += float(expected)  # <-- TODO increment only if successful
             # dj325 10/12/23
             print(f"Total sales so far {self.total_sales}")
             self.reset()
