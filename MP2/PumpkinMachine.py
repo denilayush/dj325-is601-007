@@ -158,7 +158,7 @@ class PumpkinMachine:
         if self.currently_selecting != STAGE.Pay:
             raise InvalidStageException
         if str(total) == str(expected):
-            print("Thank you! Enjoy your Pumpkin and Happy Hallowween!")
+            print("Thank you! Enjoy your Pumpkin and Happy Halloween!")
             self.total_products += 1
             self.total_sales += float(expected)  # <-- TODO increment only if successful
             # dj325 10/12/23
@@ -189,7 +189,7 @@ class PumpkinMachine:
                 self.print_current_pumpkin()
             elif self.currently_selecting == STAGE.FaceStencil:
                 stencil = input(
-                    f"Would type of face stencil would you like {', '.join(list(map(lambda f:f.name.lower(), filter(lambda f: f.in_stock(), self.face_stencils))))}? Or type next.\n")
+                    f"What type of face stencil would you like {', '.join(list(map(lambda f:f.name.lower(), filter(lambda f: f.in_stock(), self.face_stencils))))}? Or type next.\n")
                 self.handle_face_stencil_choice(stencil)
                 self.print_current_pumpkin()
             elif self.currently_selecting == STAGE.Extra:
