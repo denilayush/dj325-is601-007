@@ -10,22 +10,58 @@ def search():
     organization_name = ""
     # DO NOT DELETE PROVIDED COMMENTS
     # TODO search-1 retrieve donation id as id, donor_firstname, donor_lastname, donor_email, organization_id, item_name, item_description, item_quantity, donation_date, comments, organization_name using a LEFT JOIN
-    query = """SELECT ...
-     FROM ... LEFT JOIN ... WHERE 1=1"""
+    query = """ 
+    SELECT 
+    donation.id,donor_firstname,donor_lastname,donor_email,organization_id,item_name,item_description,item_quantity,donation_date,comments,organization.name
+    FROM IS601_MP3_Donations donation LEFT JOIN IS601_MP3_Organizations organization ON donation.organization_id = organization.id """
     args = {} # <--- add values to replace %s/%(named)s placeholders
     allowed_columns = ["donor_firstname", "donor_lastname", "donor_email", "organization_name" ,"item_name", "item_quantity", "created", "modified"]
     # TODO search-2 get fn, ln, email, company, column, order, limit from request args
+    fn = request.args.get("fn")
+    ln = request.args.get("ln")
+    email = request.args.get("email")
+    company = request.args.get("company")
+    column = request.args.get("column")
+    order = request.args.get("order")
+    limit = request.args.get("limit")
     # TODO search-3 append like filter for donor_firstname if provided
+    if fn:
+        query += " AND donor_firstname LIKE %(fn)s"
+        args["fn"] = f"%{fn}%"
     # TODO search-4 append like filter for donor_lastname if provided
+    if ln:
+        query += " AND donor_lastname LIKE %(ln)s"
+        args["ln"] = f"%{ln}%"
     # TODO search-5 append like filter for donor_email if provided
+    if email:
+        query += " AND donor_email LIKE %(email)s"
+        args["email"] = f"%{email}%"
     # TODO search-6 append like filter for item_name if provided
+    if item_name:
+        query += " AND item_name LIKE %(item_name)s"
+        args["item_name"] = f"%{item_name}%"
     # TODO search-7 append equality filter for organization_id if provided
+    if organization_id:
+        query += " AND organization_id LIKE %(organization_id)s"
+        args["organization_id"] = f"%{organization_id}%"
     # TODO search-8 append sorting if column and order are provided and within the allowed columns and order options (asc, desc)
+    if column and order and column in allowed_columns and order in ("asc", "desc"):
+        query += f" ORDER BY {column} {order}"
     # TODO search-9 append limit (default 10) or limit greater than 1 and less than or equal to 100
+    if limit:
+        try:
+            limit = int(limit)
+            if 1 < limit <= 100:
+                limit = limit
+            else:
+                limit = 10
+                flash("Limit must be between 2 and 100", "error")
+        except ValueError:
+            limit = 10
+            flash("Limit must be a valid number", "error")
     # TODO search-10 provide a proper error message if limit isn't a number or if it's out of bounds
     
-    
-    limit = 10 # TODO change this per the above requirements
+    limit = limit # TODO change this per the above requirements
     
     query += " LIMIT %(limit)s"
     args["limit"] = limit
@@ -38,14 +74,14 @@ def search():
             #print(f"rows: {rows}")
     except Exception as e:
         # TODO search-11 make message user friendly
-        flash(e, "error")
+        flash("Database Search Failed", "error")
     # hint: use allowed_columns in template to generate sort dropdown
     # hint2: convert allowed_columns into a list of tuples representing (value, label)
     # do this prior to passing to render_template, but not before otherwise it can break validation
-    
+    allowed_columns_for_template = [(column, column.replace("_", " ").title()) for column in allowed_columns]
     # TODO search-12 if request args has organization identifier set organization_name variable to the correct name
     
-    return render_template("list_donations.html", organization_name=organization_name, rows=rows, allowed_columns=allowed_columns)
+    return render_template("list_donations.html", organization_name=organization_name, rows=rows, allowed_columns=allowed_columns_for_template)
 
 
 @donations.route("/add", methods=["GET","POST"])
