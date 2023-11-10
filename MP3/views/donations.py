@@ -13,14 +13,16 @@ def search():
     query = """ 
     SELECT 
     donation.id,donor_firstname,donor_lastname,donor_email,organization_id,item_name,item_description,item_quantity,donation_date,comments,organization.name
-    FROM IS601_MP3_Donations donation LEFT JOIN IS601_MP3_Organizations organization ON donation.organization_id = organization.id """
+    FROM IS601_MP3_Donations donation LEFT JOIN IS601_MP3_Organizations organization ON donation.organization_id = organization.id WHERE 1=1"""
     args = {} # <--- add values to replace %s/%(named)s placeholders
     allowed_columns = ["donor_firstname", "donor_lastname", "donor_email", "organization_name" ,"item_name", "item_quantity", "created", "modified"]
-    # TODO search-2 get fn, ln, email, company, column, order, limit from request args
+    # TODO search-2 get fn, ln, email, organization_id, column, order, limit from request args
     fn = request.args.get("fn")
     ln = request.args.get("ln")
     email = request.args.get("email")
-    company = request.args.get("company")
+    item_name = request.args.get("item")
+
+    organization_id = request.args.get("organization_id")
     column = request.args.get("column")
     order = request.args.get("order")
     limit = request.args.get("limit")
@@ -60,8 +62,8 @@ def search():
             limit = 10
             flash("Limit must be a valid number", "error")
     # TODO search-10 provide a proper error message if limit isn't a number or if it's out of bounds
-    
-    limit = limit # TODO change this per the above requirements
+    if not limit:
+        limit = 10 # TODO change this per the above requirements
     
     query += " LIMIT %(limit)s"
     args["limit"] = limit
@@ -100,7 +102,7 @@ def add():
         # TODO add-10 comments are optional
         has_error = False # use this to control whether or not an insert occurs
         
-       
+
         if not has_error:
             try:
                 result = DB.insertOne("""
@@ -108,11 +110,11 @@ def add():
                 """, ...
                 ) # <-- TODO add-11 add query and add arguments
                 if result.status:
-                    print("donation record created")
+                    #print("donation record created")
                     flash("Created Donation Record", "success")
             except Exception as e:
                 # TODO add-7 make message user friendly
-                print(f"insert error {e}")
+                #print(f"insert error {e}")
                 flash(str(e), "danger")
     return render_template("manage_donation.html",donation=request.form)
 
@@ -152,7 +154,7 @@ def edit():
                         flash("Updated record", "success")
                 except Exception as e:
                     # TODO edit-13 make this user-friendly
-                    print(f"update error {e}")
+                    #print(f"update error {e}")
                     flash(e, "danger")
         
         try:
@@ -160,8 +162,8 @@ def edit():
             result = DB.selectOne("""SELECT 
             ...
             FROM ... LEFT JOIN ... 
-              
-             WHERE ..."""
+
+            WHERE ..."""
             , id)
             
             if result.status:
