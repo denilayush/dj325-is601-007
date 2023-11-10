@@ -52,15 +52,17 @@
             {# TODO pass/set the columns that can be used for sort/filter (i.e. allowed_columns) #}
             
             {% set cols = [
-                ("donor_firstname", "Donor First Name"),
-                ("donor_lastname", "Donor Last Name"),
-                ("donor_email", "Donor Email"),
-                ("organization_name", "Organization Name"),
-                ("item_name", "Item Name"),
-                ("item_description", "Item Description"),
-                ("item_quantity", "Item Quantity"),
-                ("donation_date", "Donation Date"),
-                ("Comments", "Comments")
+                ("donor_firstname", "donor firstname"),
+                ("donor_lastname", "donor lastname"),
+                ("donor_email", "donor email"),
+                ("organization_name", "organization name"),
+                ("item_name", "item name"),
+                ("item_description", "item description"),
+                ("item_quantity", "item quantity"),
+                ("donation_date", "donation date"),
+                ("comments", "Comments"),
+                ("created", "Created"),
+                ("modified", "Modified")
             ] %}
             {{sort_filter(cols=cols)}}
             <!--limit filter-->
@@ -87,7 +89,7 @@
                 <!-- add th elements -->
                 
                 {% for column,v in cols %}
-                    {% if column != 'id' and column != 'organization_id' and column != 'organization_name' %}
+                    {% if column != 'id' and column != 'organization_id' and column != 'organization_name' and column != 'created' and column != 'modified' %}
                         <th>{{ v }}</th>
                     {% endif %}
                 {% endfor %}
@@ -107,7 +109,7 @@
             {% for row in rows %}
                 <tr>
                     {% for column, value in row.items() %}
-                        {% if column != 'id' and column != 'organization_id' %}
+                        {% if column != 'id' and column != 'organization_id' and column != 'created' and column != 'modified' %}
                             <td>{{value }}</td>
                         {% endif %}
                     {% endfor %}
