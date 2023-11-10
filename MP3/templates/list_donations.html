@@ -13,6 +13,7 @@
             first_name (show as first name, but name should be fn)
             last_name (show as last name, but name should be ln)
             email (validate as text, not email, so partial match works)
+            item name
             organization (provided) (name is organization value is the id)
             sort/order (using allowed_columns and provided partial template)
             limit (default 10)
@@ -21,20 +22,25 @@
             <!--first name-->
             <div class="col">
                 <label class="form-label visually-hidden" for="fn">First Name</label>
-                <input type="text" id="fn" class="form-control" name="fn" placeholder="first name" value="">
+                <input type="text" id="fn" class="form-control" name="fn" placeholder="first name" value="{{request.args.get('fn') or ''}}">
             </div>
 
             <!--last name-->
             <div class="col">
                 <label class="form-label visually-hidden" for="ln">Last
                     Name</label>
-                <input type="text" id="ln" class="form-control" name="ln" placeholder="last name" value="">
+                <input type="text" id="ln" class="form-control" name="ln" placeholder="last name" value="{{request.args.get('ln') or ''}}">
             </div>
 
             <!--email-->
             <div class="col">
                 <label class="form-label visually-hidden" for="email">Email</label>
-                <input type="text" id="email" class="form-control" name="email" placeholder="email" value="">
+                <input type="text" id="email" class="form-control" name="email" placeholder="email" value="{{request.args.get('email') or ''}}">
+            </div>
+            <!-- item name-->
+            <div class="col">
+                <label class="form-label visually-hidden" for="ln">item name</label>
+                <input type="text" id="item_name" class="form-control" name="item_name" placeholder="item name" value="{{request.args.get('item_name') or ''}}">
             </div>
             <!--organization-->
             <div class="col">
@@ -44,8 +50,24 @@
             </div>
             <!-- sort filter -->
             {# TODO pass/set the columns that can be used for sort/filter (i.e. allowed_columns) #}
-            {{sort_filter(cols=[])}}
+            
+            {% set cols = [
+                ("donor_firstname", "Donor First Name"),
+                ("donor_lastname", "Donor Last Name"),
+                ("donor_email", "Donor Email"),
+                ("organization_name", "Organization Name"),
+                ("item_name", "Item Name"),
+                ("item_description", "Item Description"),
+                ("item_quantity", "Item Quantity"),
+                ("donation_date", "Donation Date"),
+                ("Comments", "Comments")
+            ] %}
+            {{sort_filter(cols=cols)}}
             <!--limit filter-->
+            <div class="col">
+                <label class="form-label visually-hidden" for="limit">Limit</label>
+                <input class="form-control" type="number" min="1" max="100" placeholder="max records" id="limit" name="limit" value="{{request.args.get('limit') or 10}}">
+            </div>
 
             <div class="col">
                 <input type="submit" class="btn btn-primary" value="Filter" />
@@ -63,7 +85,13 @@
                 {# don't show any id or organization_id columns #}
                 {# IMPORTANT use table column names as the headings, replace _ with space via filter #}
                 <!-- add th elements -->
-
+                
+                {% for column,v in cols %}
+                    {% if column != 'id' and column != 'organization_id' and column != 'organization_name' %}
+                        <th>{{ v }}</th>
+                    {% endif %}
+                {% endfor %}
+                <th>Organization Name</th>
                 <!-- keep this -->
                 <th>Actions</th>
             </tr>
@@ -76,6 +104,21 @@
             a delete button that passes the donation id and the request args to the donation delete route
             #}
             <!-- iterate over rows and generate proper tr and td elements with the data -->
+            {% for row in rows %}
+                <tr>
+                    {% for column, value in row.items() %}
+                        {% if column != 'id' and column != 'organization_id' %}
+                            <td>{{value }}</td>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {# Add the edit and delete buttons in the last column #}
+                    <td>
+                        <a href="{{ url_for('donations.edit', id=row.id) }}" class="btn btn-secondary btn-sm">Edit</a>
+                        <a href="{{ url_for('donations.delete', id=row.id, **request.args.to_dict()) }}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
 
         </tbody>
         {% else %}
