@@ -20,7 +20,7 @@ def search():
     fn = request.args.get("fn")
     ln = request.args.get("ln")
     email = request.args.get("email")
-    item_name = request.args.get("item")
+    item_name = request.args.get("item_name")
 
     organization_id = request.args.get("organization_id")
     column = request.args.get("column")
@@ -48,6 +48,10 @@ def search():
         args["organization_id"] = f"%{organization_id}%"
     # TODO search-8 append sorting if column and order are provided and within the allowed columns and order options (asc, desc)
     if column and order and column in allowed_columns and order in ("asc", "desc"):
+        if column == 'created':
+            column = 'donation.created'
+        if column == 'modified':
+            column = 'donation.modified'
         query += f" ORDER BY {column} {order}"
     # TODO search-9 append limit (default 10) or limit greater than 1 and less than or equal to 100
     if limit:
