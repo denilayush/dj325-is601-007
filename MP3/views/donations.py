@@ -272,7 +272,7 @@ def delete():
         try:
             result = DB.delete("DELETE FROM IS601_MP3_Donations WHERE id = %s", id)
             if result.status:
-                flash("Deleted role", "success")
+                flash("Deleted Donation", "success")
         except Exception as e:
             print(e)
             flash(e, "danger")

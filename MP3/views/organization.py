@@ -42,8 +42,8 @@ def search():
 
     # TODO search-3 append a LIKE filter for name if provided
     if name:
-        query += " AND name LIKE %(name)s" 
-        args['name'] = name
+        query += " AND organization.name LIKE %(name)s" 
+        args['name'] = f"%{name}%"
     # TODO search-4 append an equality filter for country if provided
     if country:
         query += " AND organization.country = %(country)s"
@@ -151,7 +151,11 @@ def add():
 @organization.route("/edit", methods=["GET", "POST"])
 def edit():
     # TODO edit-1 request args id is required (flash proper error message)
+    row = {}
     id = False
+    id = request.args.get('id')
+    print(id)
+
     if not id: # TODO update this for TODO edit-1
         pass
     else:
@@ -166,6 +170,14 @@ def edit():
             zipcode = request.form.get('zip')
             website = request.form.get('website')
             description = request.form.get('description')
+            data['name'] = name
+            data['address'] = address
+            data['city'] = city
+            data['state'] = state
+            data['country'] = country
+            data['website'] = website
+            data['zip'] = zipcode
+            data['description'] = description
             # TODO edit-3 name is required (flash proper error message)
             # TODO edit-4 address is required (flash proper error message)
             # TODO edit-5 city is required (flash proper error message)
@@ -184,11 +196,18 @@ def edit():
             if not has_error:
                 try:
                     # TODO edit-10 fill in proper update query
-                    # name, address, city, state, country, zip, website
-                    result = DB.update("""
-                    UPDATE ...
+                    result = DB.update(""" 
+                    UPDATE IS601_MP3_Organizations
                     SET
-                    ...
+                    name = %(name)s,
+                    address = %(address)s,
+                    city = %(city)s,
+                    state = %(state)s,
+                    country = %(country)s,
+                    zip = %(zip)s,
+                    website = %(website)s,
+                    description = %(description)s
+                    WHERE id = %(id)s         
                     """, data)
                     
                     if result.status:
@@ -198,10 +217,21 @@ def edit():
                     # TODO edit-11 make this user-friendly
                     print(f"{e}")
                     flash(str(e), "danger")
-        row = {}
         try:
             # TODO edit-12 fetch the updated data
-            result = DB.selectOne("SELECT ... FROM ... WHERE ...", id)
+            result = DB.selectOne("""SELECT
+                id,
+                name,
+                address,
+                city,
+                state,
+                country,
+                zip,
+                website,
+                description
+            FROM IS601_MP3_Organizations 
+            WHERE id = %s
+            """, id)
             if result.status:
                 row = result.row
                 
@@ -218,6 +248,20 @@ def delete():
     # TODO delete-3 ensure a flash message shows for successful delete
     # TODO delete-4 pass all argument except id to this route
     # TODO delete-5 redirect to organization search
-    pass
-   
-    # return redirect(url_for("organization.search", **args))
+    id = request.args.get('id')
+    args = {**request.args}
+    if not id:
+        flash('Select correct ID','danger')
+    if id:
+        try:
+            result = DB.delete("DELETE FROM IS601_MP3_Donations WHERE organization_id = %s", id)
+            if result.status:
+                flash("Deleted All Donations related to Organization", "success")
+            result1 = DB.delete("DELETE FROM IS601_MP3_Organizations WHERE id = %s", id)
+            if result1.status:
+                flash("Deleted Organization", "success")
+        except Exception as e:
+            print(e)
+            flash(e, "danger")
+        del args["id"]
+    return redirect(url_for("organization.search", **args))
