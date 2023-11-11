@@ -21,7 +21,6 @@ def search():
     ln = request.args.get("ln")
     email = request.args.get("email")
     item_name = request.args.get("item_name")
-
     organization_id = request.args.get("organization_id")
     column = request.args.get("column")
     order = request.args.get("order")
@@ -44,8 +43,15 @@ def search():
         args["item_name"] = f"%{item_name}%"
     # TODO search-7 append equality filter for organization_id if provided
     if organization_id:
-        query += " AND organization_id LIKE %(organization_id)s"
-        args["organization_id"] = f"%{organization_id}%"
+        query += " AND donation.organization_id = %(organization_id)s"
+        args["organization_id"] = organization_id
+        try:
+            # Fetch organization name from the database
+            organization_result = DB.selectOne("SELECT name FROM IS601_MP3_Organizations WHERE id = %s", organization_id)
+            if organization_result.status:
+                organization_name = organization_result.row['name']
+        except Exception as e:
+            flash(str(e), "error")
     # TODO search-8 append sorting if column and order are provided and within the allowed columns and order options (asc, desc)
     if column and order and column in allowed_columns and order in ("asc", "desc"):
         if column == 'created':
@@ -71,8 +77,8 @@ def search():
     
     query += " LIMIT %(limit)s"
     args["limit"] = limit
-    #print("query",query)
-    #print("args", args)
+    print("query",query)
+    print("args", args)
     try:
         result = DB.selectAll(query, args)
         if result.status:
@@ -95,26 +101,58 @@ def add():
     if request.method == "POST":
         # TODO add-1 retrieve form data for donor_firstname, donor_lastname, donor_email, organization_id, item_name, item_description, item_quantity, donation_date, comments
         # TODO add-2 donor_firstname is required (flash proper error message)
-        # TODO add-3 donor_lastname is required (flash proper error message)
-        # TODO add-4 donor_email is required (flash proper error message)
-        # TODO add-4a email must be in proper format (flash proper message)
-        # TODO add-5 organization_id is required (flash proper error message)
-        # TODO add-6 item_name is required (flash proper error message)
-        # TODO add-7 item_description is optional
-        # TODO add-8 item_quantity is required and must be more than 0 (flash proper error message)
-        # TODO add-9 donation_date is required and must be within the past 30 days
-        # TODO add-10 comments are optional
         has_error = False # use this to control whether or not an insert occurs
+        donor_firstname = request.form.get('donor_firstname')
+        if not donor_firstname:
+            flash('First Name missing','danger')
+            has_error = True
+        # TODO add-3 donor_lastname is required (flash proper error message)
+        donor_lastname = request.form.get('donor_lastname')
+        if not donor_lastname:
+            flash('Last Name missing','danger')
+            has_error = True
+        # TODO add-4 donor_email is required (flash proper error message)
+        donor_email = request.form.get('donor_email')
+        if not donor_email:
+            flash('Email missing','danger')
+            has_error = True
+        # TODO add-4a email must be in proper format (flash proper message)
+
+        # TODO add-5 organization_id is required (flash proper error message)
+        organization_id = request.form.get('organization_id')
+        # TODO add-6 item_name is required (flash proper error message)
+        item_name = request.form.get('item_name')
+        # TODO add-7 item_description is optional
+        item_description = request.form.get('item_description')
+        # TODO add-8 item_quantity is required and must be more than 0 (flash proper error message)
+        item_quantity = request.form.get('item_quantity')
+        # TODO add-9 donation_date is required and must be within the past 30 days
+        donation_date = request.form.get('donation_date')
+
+        # TODO add-10 comments are optional
+        comments = request.form.get('comments')
+
         
 
         if not has_error:
             try:
                 result = DB.insertOne("""
-                INSERT INTO ...
-                """, ...
+                INSERT INTO IS601_MP3_Donations (donor_firstname, donor_lastname, donor_email, organization_id, item_name, item_description, item_quantity, donation_date, comments)
+                VALUES (%(donor_firstname)s, %(donor_lastname)s, %(donor_email)s, %(organization_id)s, %(item_name)s, %(item_description)s, %(item_quantity)s, %(donation_date)s, %(comments)s)
+                """,{
+                        'donor_firstname': donor_firstname,
+                        'donor_lastname': donor_lastname,
+                        'donor_email': donor_email,
+                        'organization_id': organization_id,
+                        'item_name': item_name,
+                        'item_description': item_description,
+                        'item_quantity': item_quantity,
+                        'donation_date': donation_date,
+                        'comments': comments
+                    }
                 ) # <-- TODO add-11 add query and add arguments
                 if result.status:
-                    #print("donation record created")
+                    print("donation record created")
                     flash("Created Donation Record", "success")
             except Exception as e:
                 # TODO add-7 make message user friendly
@@ -128,12 +166,22 @@ def edit():
     
     # TODO edit-1 request args id is required (flash proper error message)
     id = False
+    id = request.args.get('id')
     if not id: # TODO update this for TODO edit-1
-        pass
+        flash('Select Proper Row to edit any donation','danger')
     else:
         if request.method == "POST":
             
             # TODO add-2 retrieve form data for donor_firstname, donor_lastname, donor_email, organization_id, item_name, item_description, item_quantity, donation_date, comments
+            donor_firstname = request.form.get('donor_firstname')
+            donor_lastname = request.form.get('donor_lastname')
+            donor_email = request.form.get('donor_email')
+            organization_id = request.form.get('organization_id')
+            item_name = request.form.get('item_name')
+            item_description = request.form.get('item_description')
+            item_quantity = request.form.get('item_quantity')
+            donation_date = request.form.get('donation_date')
+            comments = request.form.get('comments')
             # TODO add-3 donor_firstname is required (flash proper error message)
             # TODO add-4 donor_lastname is required (flash proper error message)
             # TODO add-5 donor_email is required (flash proper error message)
@@ -150,9 +198,30 @@ def edit():
                 try:
                     # TODO edit-12 fill in proper update query
                     result = DB.update("""
-                    UPDATE ... SET
-                    ...
-                    """, ...)
+                    UPDATE IS601_MP3_Donations
+                    SET
+                        donor_firstname = %(donor_firstname)s,
+                        donor_lastname = %(donor_lastname)s,
+                        donor_email = %(donor_email)s,
+                        organization_id = %(organization_id)s,
+                        item_name = %(item_name)s,
+                        item_description = %(item_description)s,
+                        item_quantity = %(item_quantity)s,
+                        donation_date = %(donation_date)s,
+                        comments = %(comments)s
+                    WHERE id = %(id)s
+                    """, {
+                        'donor_firstname': donor_firstname,
+                        'donor_lastname': donor_lastname,
+                        'donor_email': donor_email,
+                        'organization_id': organization_id,
+                        'item_name': item_name,
+                        'item_description': item_description,
+                        'item_quantity': item_quantity,
+                        'donation_date': donation_date,
+                        'comments': comments,
+                        'id': id
+                    })
                     
                     if result.status:
                         flash("Updated record", "success")
@@ -163,12 +232,22 @@ def edit():
         
         try:
             # TODO edit-14 fetch the updated data 
-            result = DB.selectOne("""SELECT 
-            ...
-            FROM ... LEFT JOIN ... 
-
-            WHERE ..."""
-            , id)
+            result = DB.selectOne("""SELECT
+                donation.id,
+                donor_firstname,
+                donor_lastname,
+                donor_email,
+                organization_id,
+                item_name,
+                item_description,
+                item_quantity,
+                donation_date,
+                comments,
+                organization.name
+            FROM IS601_MP3_Donations donation
+            LEFT JOIN IS601_MP3_Organizations organization ON donation.organization_id = organization.id
+            WHERE donation.id = %s
+            """, id)
             
             if result.status:
                 row = result.row
@@ -185,6 +264,17 @@ def delete():
     # TODO delete-3 ensure a flash message shows for successful delete
     # TODO delete-4 pass all argument except id to this route
     # TODO delete-5 redirect to donation search
-    pass
-
-    # return redirect(url_for("donations.search", **args))
+    id = request.args.get('id')
+    args = {**request.args}
+    if not id:
+        flash('Select correct ID','danger')
+    if id:
+        try:
+            result = DB.delete("DELETE FROM IS601_MP3_Donations WHERE id = %s", id)
+            if result.status:
+                flash("Deleted role", "success")
+        except Exception as e:
+            print(e)
+            flash(e, "danger")
+        del args["id"]
+    return redirect(url_for("donations.search", **args))
