@@ -11,23 +11,73 @@ def search():
     # TODO search-1 retrieve id, name, address, city, country, state, zip, website, donation count as donations for the organization
     # don't do SELECT * and replace the below "..." portion
     allowed_columns = ["name", "city", "country", "state", "modified", "created"]
-    query = "... WHERE 1=1"
+    query = """SELECT
+            organization.id,
+            organization.name,
+            organization.address,
+            organization.city,
+            organization.country,
+            organization.state,
+            organization.zip,
+            organization.website,
+            COUNT(donation.id) AS donation_count
+        FROM
+            IS601_MP3_Organizations organization
+        LEFT JOIN
+            IS601_MP3_Donations donation ON organization.id = donation.organization_id
+        WHERE 1=1
+        """
     args = {} # <--- add values to replace %s/%(named)s placeholders
-   
     
     # TODO search-2 get name, country, state, column, order, limit request args
+    name = request.args.get('name')
+    country = request.args.get('country')
+    state = request.args.get('state')
+    column = request.args.get('column')
+    order = request.args.get('order')
+    limit = request.args.get('limit')
+
+    args['order'] = request.args.get('order')
+    args['limit'] = request.args.get('limit')
+
     # TODO search-3 append a LIKE filter for name if provided
+    if name:
+        query += " AND name LIKE %(name)s" 
+        args['name'] = name
     # TODO search-4 append an equality filter for country if provided
+    if country:
+        query += " AND organization.country = %(country)s"
+    args['country'] = country
     # TODO search-5 append an equality filter for state if provided
+    if state:
+        query += " AND organization.state = %(state)s"
+        args['state'] = state
+    query+= """
+            GROUP BY
+            organization.id,
+            organization.name,
+            organization.address,
+            organization.city,
+            organization.country,
+            organization.state,
+            organization.zip,
+            organization.website
+            """
     # TODO search-6 append sorting if column and order are provided and within the allows columns and allowed order asc,desc
+    if column and order and column in allowed_columns and order in ("asc", "desc"):
+        query += f" ORDER BY {column} {order}"
+        args['column'] = column
+
+   
     # TODO search-7 append limit (default 10) or limit greater than or equal to 1 and less than or equal to 100
     # TODO search-8 provide a proper error message if limit isn't a number or if it's out of bounds
     limit = 10 # TODO change this per the above requirements
-    
-    query += " LIMIT %(limit)s"
+    if not limit:
+        limit = 10
+    query += " LIMIT "+str(limit)
     args["limit"] = limit
-    #print("query",query)
-    #print("args", args)
+    print("query",query)
+    print("args", args)
     try:
         result = DB.selectAll(query, args)
         #print(f"result {result.rows}")
@@ -48,8 +98,17 @@ def search():
 def add():
     if request.method == "POST":
         has_error = False # use this to control whether or not an insert occurs
+
         
         # TODO add-1 retrieve form data for name, address, city, state, country, zip, website, description
+        name = request.form.get('name')
+        address = request.form.get('address')
+        city = request.form.get('city')
+        state = request.form.get('state')
+        country = request.form.get('country')
+        zipcode = request.form.get('zip')
+        website = request.form.get('website')
+        description = request.form.get('description')
         # TODO add-2 name is required (flash proper error message)
         # TODO add-3 address is required (flash proper error message)
         # TODO add-4 city is required (flash proper error message)
@@ -67,11 +126,19 @@ def add():
         if not has_error:
             try:
                 result = DB.insertOne("""
-                INSERT INTO IS601_MP3_Organizations ...
-                ...
+                INSERT INTO IS601_MP3_Organizations (name, address, city, state, country, zip, website, description)
                 VALUES
-                ...
-                """, ...) # <-- TODO add-10 add query and add arguments
+                (%(name)s, %(address)s, %(city)s, %(state)s, %(country)s, %(zipcode)s, %(website)s, %(description)s)
+                """, {
+                    'name':name,
+                    'address':address,
+                    'city':city,
+                    'state':state,
+                    'country':country,
+                    'zip':zipcode,
+                    'website':website,
+                    'description':description,
+                }) # <-- TODO add-10 add query and add arguments
                 
                 if result.status:
                     flash("Added Organization", "success")
@@ -91,6 +158,14 @@ def edit():
         if request.method == "POST":
             data = {"id": id} # use this as needed, can convert to tuple if necessary
             # TODO edit-2 retrieve form data for name, address, city, state, country, zip, website
+            name = request.form.get('name')
+            address = request.form.get('address')
+            city = request.form.get('city')
+            state = request.form.get('state')
+            country = request.form.get('country')
+            zipcode = request.form.get('zip')
+            website = request.form.get('website')
+            description = request.form.get('description')
             # TODO edit-3 name is required (flash proper error message)
             # TODO edit-4 address is required (flash proper error message)
             # TODO edit-5 city is required (flash proper error message)
