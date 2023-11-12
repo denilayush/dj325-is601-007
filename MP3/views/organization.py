@@ -127,12 +127,30 @@ def add():
                 flash('State is required','danger')
                 has_error = True
         # TODO add-5a state should be a valid state mentioned in pycountry for the selected state
+        # Get a list of valid state codes for the selected country
+        try:
+            states = list(pycountry.subdivisions.get(country_code=country))
+            state_codes = [s.code for s in states]
+        except:
+            has_error = True
+        # Check if the provided state code is in the list of valid state codes
+        if state not in state_codes:
+            flash('Not a valid State', 'danger')
+            has_error = True
         # hint see geography.py and pycountry documentation to solve this
         # TODO add-6 country is required (flash proper error message)
         if not country:
                 flash('Country is required','danger')
                 has_error = True
         # TODO add-6a country should be a valid country mentioned in pycountry
+        #print(state,country)
+        countries = map(lambda c: {"code": c.alpha_2, "name": c.name},list(pycountry.countries))
+        country_codes = [c['code'] for c in countries]
+        #print(country not in country_codes)
+        #print(country_codes)
+        if country not in country_codes:
+            flash('Not a valid Country','danger')
+            has_error = True
         # hint see geography.py and pycountry documentation to solve this
         # TODO add-7 website is not required
         # TODO add-8 zip is required (flash proper error message)
@@ -147,7 +165,7 @@ def add():
                 result = DB.insertOne("""
                 INSERT INTO IS601_MP3_Organizations (name, address, city, state, country, zip, website, description)
                 VALUES
-                (%(name)s, %(address)s, %(city)s, %(state)s, %(country)s, %(zipcode)s, %(website)s, %(description)s)
+                (%(name)s, %(address)s, %(city)s, %(state)s, %(country)s, %(zip)s, %(website)s, %(description)s)
                 """, {
                     'name':name,
                     'address':address,
@@ -217,12 +235,28 @@ def edit():
                 has_error = True
             # TODO edit-6a state should be a valid state mentioned in pycountry for the selected state
             # hint see geography.py and pycountry documentation
+            try:
+                states = list(pycountry.subdivisions.get(country_code=country))
+                state_codes = [s.code for s in states]
+            except:
+                has_error = True
+            # Check if the provided state code is in the list of valid state codes
+            if state not in state_codes:
+                flash('Not a valid State', 'danger')
+                has_error = True
             # TODO edit-7 country is required (flash proper error message)
             if not country:
                 flash("Country is required",'danger')
                 has_error = True
             # TODO edit-7a country should be a valid country mentioned in pycountry
             # hint see geography.py and pycountry documentation
+            countries = map(lambda c: {"code": c.alpha_2, "name": c.name},list(pycountry.countries))
+            country_codes = [c['code'] for c in countries]
+            #print(country not in country_codes)
+            #print(country_codes)
+            if country not in country_codes:
+                flash('Not a valid Country','danger')
+                has_error = True
             # TODO edit-8 website is not required
             # TODO edit-9 zipcode is required (flash proper error message)
             if not zipcode:
