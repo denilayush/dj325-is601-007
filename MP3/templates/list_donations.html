@@ -116,8 +116,10 @@
                     
                     {# Add the edit and delete buttons in the last column #}
                     <td>
-                        <a href="{{ url_for('donations.edit', id=row.id) }}" class="btn btn-secondary btn-sm">Edit</a>
-                        <a href="{{ url_for('donations.delete', id=row.id, **request.args.to_dict()) }}" class="btn btn-danger btn-sm">Delete</a>
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <a href="{{ url_for('donations.edit', id=row.id) }}" class="btn btn-outline-secondary btn-sm">Edit</a>
+                            <a href="{{ url_for('donations.delete', id=row.id, **request.args.to_dict()) }}" class="btn btn-outline-danger btn-sm">Del</a>
+                        </div>
                     </td>
                 </tr>
             {% endfor %}

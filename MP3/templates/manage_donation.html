@@ -25,21 +25,21 @@ Donation{% endblock %}
             <div class="form-group row mb-3">
                 <label for="donor_firstname" class="col-sm-2 col-form-label">First Name</label>
                 <div class="col-sm-10">
-                <input type="text" class="form-control" id="donor_firstname" name="donor_firstname" placeholder="Firstname" value="{{donation.donor_firstname or '' }}" required>
+                <input type="text" class="form-control" id="donor_firstname" name="donor_firstname" placeholder="Firstname" value="{{donation.donor_firstname or '' }}" >
                 </div>
             </div>
             <!--donor last name-->
             <div class="form-group row mb-3">
                 <label for="donor_lastname" class="col-sm-2 col-form-label">Last Name</label>
                 <div class="col-sm-10">
-                <input type="text" class="form-control" id="donor_lastname" name="donor_lastname" placeholder="Lastname" value="{{donation.donor_lastname or '' }}" required>
+                <input type="text" class="form-control" id="donor_lastname" name="donor_lastname" placeholder="Lastname" value="{{donation.donor_lastname or '' }}" >
                 </div>
             </div>
             <!--donor email-->
             <div class="form-group row mb-3">
                 <label for="donor_email" class="col-sm-2 col-form-label">Donor Email</label>
                 <div class="col-sm-10">
-                <input type="text" class="form-control" id="donor_email" name="donor_email" placeholder="Email" value="{{donation.donor_email or '' }}" required>
+                <input type="text" class="form-control" id="donor_email" name="donor_email" placeholder="Email" value="{{donation.donor_email or '' }}" >
                 </div>
             </div>
             
@@ -47,7 +47,7 @@ Donation{% endblock %}
             <div class="form-group row mb-3">
                 <label for="item_name" class="col-sm-2 col-form-label">Item Name</label>
                 <div class="col-sm-10">
-                <input type="text" class="form-control" id="item_name" name="item_name" placeholder="Item Name" value="{{donation.item_name or '' }}" required>
+                <input type="text" class="form-control" id="item_name" name="item_name" placeholder="Item Name" value="{{donation.item_name or '' }}" >
                 </div>
             </div>
             <!--item_description -->
@@ -62,21 +62,21 @@ Donation{% endblock %}
             <div class="form-group row mb-3">
                 <label for="item_quantity" class="col-sm-2 col-form-label">Item Quantity</label>
                 <div class="col-sm-10">
-                <input type="number" class="form-control" id="item_quantity" name="item_quantity" placeholder="Quantity" value="{{donation.item_quantity or ''}}" required min="1">
+                <input type="number" class="form-control" id="item_quantity" name="item_quantity" placeholder="Quantity" value="{{donation.item_quantity or ''}}"  min="1">
                 </div>
             </div>
             <!--donation date-->
             <div class="form-group row mb-3">
                 <label for="donation_date" class="col-sm-2 col-form-label">Donation Date</label>
                 <div class="col-sm-10">
-                <input type="date" class="form-control" id="donation_date" name="donation_date" placeholder="Donation Date" value="{{donation.donation_date or ''}}" required>
+                <input type="date" class="form-control" id="donation_date" name="donation_date" placeholder="Donation Date" value="{{donation.donation_date or ''}}" >
                 </div>
             </div>
             <!-- comment selection-->
             <div class="form-group row mb-3">
                 <label for="comments" class="col-sm-2 col-form-label">Comment</label>
                 <div class="col-sm-10">
-                <input type="text" class="form-control" id="comments" name="comments" placeholder="comment" value="{{donation.comments or ''}}" required min="1">
+                <input type="text" class="form-control" id="comments" name="comments" placeholder="comment" value="{{donation.comments or ''}}"  min="1">
                 </div>
             </div>
             <!-- organization selection-->
@@ -89,8 +89,8 @@ Donation{% endblock %}
             </div>
             
 
-            <div class="text-center">
-            <input type="submit" class="btn btn-primary" value="Save Donation" />
+            <div class="text-center mb-10">
+            <input type="submit" class="btn btn-primary" style="margin-bottom: 5em" value="Save Donation" />
             </div>
         </form>
     </div>
