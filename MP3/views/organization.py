@@ -110,16 +110,35 @@ def add():
         website = request.form.get('website')
         description = request.form.get('description')
         # TODO add-2 name is required (flash proper error message)
+        if not name:
+                flash('Name is required','danger')
+                has_error = True
         # TODO add-3 address is required (flash proper error message)
+        if not address:
+                flash('Address is required','danger')
+                has_error = True
+        
         # TODO add-4 city is required (flash proper error message)
+        if not city:
+                flash('City is required','danger')
+                has_error = True
         # TODO add-5 state is required (flash proper error message)
+        if not state:
+                flash('State is required','danger')
+                has_error = True
         # TODO add-5a state should be a valid state mentioned in pycountry for the selected state
         # hint see geography.py and pycountry documentation to solve this
         # TODO add-6 country is required (flash proper error message)
+        if not country:
+                flash('Country is required','danger')
+                has_error = True
         # TODO add-6a country should be a valid country mentioned in pycountry
         # hint see geography.py and pycountry documentation to solve this
         # TODO add-7 website is not required
         # TODO add-8 zip is required (flash proper error message)
+        if not zipcode:
+                flash('Zipcode is required','danger')
+                has_error = True
         # note: call zip variable zipcode as zip is a built in function it could lead to issues
         # TODO add-9 description is not required
 
@@ -178,20 +197,39 @@ def edit():
             data['website'] = website
             data['zip'] = zipcode
             data['description'] = description
+
+            has_error = False # use this to control whether or not an insert occurs
             # TODO edit-3 name is required (flash proper error message)
+            if not name:
+                flash("Name is required",'danger')
+                has_error = True
             # TODO edit-4 address is required (flash proper error message)
+            if not address:
+                flash("Address is required",'danger')
+                has_error = True
             # TODO edit-5 city is required (flash proper error message)
+            if not city:
+                flash("City is required",'danger')
+                has_error = True
             # TODO edit-6 state is required (flash proper error message)
+            if not state:
+                flash("State is required",'danger')
+                has_error = True
             # TODO edit-6a state should be a valid state mentioned in pycountry for the selected state
             # hint see geography.py and pycountry documentation
             # TODO edit-7 country is required (flash proper error message)
+            if not country:
+                flash("Country is required",'danger')
+                has_error = True
             # TODO edit-7a country should be a valid country mentioned in pycountry
             # hint see geography.py and pycountry documentation
             # TODO edit-8 website is not required
             # TODO edit-9 zipcode is required (flash proper error message)
+            if not zipcode:
+                flash("Zipcode is required",'danger')
+                has_error = True
             # note: call zip variable zipcode as zip is a built in function it could lead to issues
             # populate data dict with mappings
-            has_error = False # use this to control whether or not an insert occurs
 
             if not has_error:
                 try:

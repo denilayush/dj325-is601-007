@@ -1,8 +1,8 @@
-import datetime
+from datetime import datetime, timedelta
 from flask import Blueprint, redirect, render_template, request, flash, url_for
 from sql.db import DB
 donations = Blueprint('donations', __name__, url_prefix='/donations')
-
+import re
 
 @donations.route("/search", methods=["GET"])
 def search():
@@ -117,17 +117,35 @@ def add():
             flash('Email missing','danger')
             has_error = True
         # TODO add-4a email must be in proper format (flash proper message)
-
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", donor_email):
+            flash("Email was not in correct",'danger')
+            has_error = True
         # TODO add-5 organization_id is required (flash proper error message)
         organization_id = request.form.get('organization_id')
+        if not organization_id:
+            flash('Organization ID is required','danger')
+            has_error = True
         # TODO add-6 item_name is required (flash proper error message)
         item_name = request.form.get('item_name')
+        if not item_name:
+            flash("Item Name is required",'danger')
+            has_error = True
         # TODO add-7 item_description is optional
         item_description = request.form.get('item_description')
         # TODO add-8 item_quantity is required and must be more than 0 (flash proper error message)
         item_quantity = request.form.get('item_quantity')
+        if not item_quantity or item_quantity<1:
+            flash("Item Quantity is required",'danger')
+            has_error = True
         # TODO add-9 donation_date is required and must be within the past 30 days
         donation_date = request.form.get('donation_date')
+        if not donation_date:
+            flash("Donation Date is required",'danger')
+            has_error = True
+        #print(datetime.strptime(donation_date, '%Y-%m-%d').date())
+        if datetime.now().date() - datetime.strptime(donation_date, '%Y-%m-%d').date() <= timedelta(days=30):
+            flash('You cannot select date past 30 days','danger')
+            has_error = True
 
         # TODO add-10 comments are optional
         comments = request.form.get('comments')
@@ -182,17 +200,47 @@ def edit():
             item_quantity = request.form.get('item_quantity')
             donation_date = request.form.get('donation_date')
             comments = request.form.get('comments')
+            
+            # decides should we update or not
+            has_error = False # use this to control whether or not an insert occurs
             # TODO add-3 donor_firstname is required (flash proper error message)
+            if not donor_firstname:
+                flash("First Name is Required",'danger')
+                has_error = True
             # TODO add-4 donor_lastname is required (flash proper error message)
+            if not donor_lastname:
+                flash("Last Name is Required",'danger')
+                has_error = True
             # TODO add-5 donor_email is required (flash proper error message)
+            if not donor_email:
+                flash("Email is Required",'danger')
+                has_error = True
             # TODO add-5a email must be in proper format (flash proper message)
+            if not re.match(r"[^@]+@[^@]+\.[^@]+", donor_email):
+                flash("Email was not in correct",'danger')
+                has_error = True
             # TODO add-6 organization_id is required (flash proper error message)
+            if not organization_id:
+                flash('Organization ID is required','danger')
+                has_error = True
             # TODO add-7 item_name is required (flash proper error message)
+            if not item_name:
+                flash("Item Name is required",'danger')
+                has_error = True
             # TODO add-8 item_description is optional
             # TODO add-9 item_quantity is required and must be more than 0 (flash proper error message)
+            if not item_quantity or item_quantity<1:
+                flash("Item Quantity is required",'danger')
+                has_error = True
             # TODO add-10 donation_date is required and must be within the past 30 days
+            if not donation_date:
+                flash("Donation Date is required",'danger')
+                has_error = True
+            #print(datetime.strptime(donation_date, '%Y-%m-%d').date())
+            if datetime.now().date() - datetime.strptime(donation_date, '%Y-%m-%d').date() <= timedelta(days=30):
+                flash('You cannot select date past 30 days','danger')
+                has_error = True
             # TODO add-11 comments are optional
-            has_error = False # use this to control whether or not an insert occurs
                 
             if not has_error:
                 try:
