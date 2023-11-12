@@ -58,6 +58,8 @@ def search():
             column = 'donation.created'
         if column == 'modified':
             column = 'donation.modified'
+        if column == 'organization_name':
+            column= 'organization.name'
         query += f" ORDER BY {column} {order}"
     # TODO search-9 append limit (default 10) or limit greater than 1 and less than or equal to 100
     if limit:
