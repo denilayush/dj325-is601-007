@@ -145,11 +145,11 @@ def test_organization_delete(client):
 )
 def test_organization_list(allowed_column, fake_org_2,client):
     cols = ["name",
-                 "address",
-                 "city",
-                 "country",
-                 "state",
-                 "zip", "website","donations", "actions"]
+                "address",
+                "city",
+                "country",
+                "state",
+                "zip", "website","donations", "actions"]
     col_names = map(lambda x: x.replace("_"," "), cols)
     cols.remove("actions")
     cols.remove("donations")
@@ -175,8 +175,8 @@ def test_organization_list(allowed_column, fake_org_2,client):
     result = DB.selectAll(f"SELECT {','.join(cols)},(select count(1) FROM IS601_MP3_Donations where organization_id = id) as donations FROM IS601_MP3_Organizations WHERE 1=1 ORDER BY {ac} asc LIMIT 3")
     assert result and result.rows and len(result.rows) > 0, "Organization lookup failed"
     vals = result.rows[0].items()
-    #print(tbody_values)
-    #print(result.row)
+    print(tr_values)
+    print(result.row)
     for k,v in vals:
         i = thead_names.index(k.replace("_"," ").lower())
         assert str(v if v is not None else "none").lower() in tr_values[i], f"Expected value {v} in table cell in column [{i}] {tr_values[i]}"
