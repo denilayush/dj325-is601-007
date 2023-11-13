@@ -20,7 +20,7 @@ def search():
             organization.state,
             organization.zip,
             organization.website,
-            COUNT(donation.id) AS donation_count
+            COUNT(donation.id) AS donations
         FROM
             IS601_MP3_Organizations organization
         LEFT JOIN
@@ -47,26 +47,25 @@ def search():
     # TODO search-4 append an equality filter for country if provided
     if country:
         query += " AND organization.country = %(country)s"
-    args['country'] = country
+        args['country'] = f"%{country}%"
     # TODO search-5 append an equality filter for state if provided
     if state:
         query += " AND organization.state = %(state)s"
-        args['state'] = state
+        args['state'] = f"%{state}%"
     query+= """
             GROUP BY
-            organization.id,
-            organization.name,
-            organization.address,
-            organization.city,
-            organization.country,
-            organization.state,
-            organization.zip,
-            organization.website
+            organization.id
             """
     # TODO search-6 append sorting if column and order are provided and within the allows columns and allowed order asc,desc
     if column and order and column in allowed_columns and order in ("asc", "desc"):
+        if column == "created":
+            column = "organization.created"
+        if column == "modified":
+            column = "organization.modified"
+        if column == "name":
+            column = "organization.name"
         query += f" ORDER BY {column} {order}"
-        args['column'] = column
+        args['column'] = f"%{column}%"
 
    
     # TODO search-7 append limit (default 10) or limit greater than or equal to 1 and less than or equal to 100
@@ -134,7 +133,7 @@ def add():
         except:
             has_error = True
         # Check if the provided state code is in the list of valid state codes
-        if state not in state_codes:
+        if str(country + "-" +state) not in state_codes:
             flash('Not a valid State', 'danger')
             has_error = True
         # hint see geography.py and pycountry documentation to solve this
@@ -241,7 +240,9 @@ def edit():
             except:
                 has_error = True
             # Check if the provided state code is in the list of valid state codes
-            if state not in state_codes:
+            #print(str(country + "-" +state))
+            #print( str(country + "-" +state) not in state_codes)
+            if str(country + "-" +state) not in state_codes:
                 flash('Not a valid State', 'danger')
                 has_error = True
             # TODO edit-7 country is required (flash proper error message)
