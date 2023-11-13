@@ -1,0 +1,137 @@
+{% extends "layout.html" %}
+{% block title %}Donations{% endblock %}
+{% block content %}
+{% from "organization_dropdown.html" import organization_dropdown %}
+{% from "sort_filter.html" import sort_filter %}
+<div class="container-fluid">
+    <div class="h1 text-center">{{organization_name}}
+        Donations</div>
+    <form method="GET">
+        <div class="row">
+            {# TODO
+            build a horizontal filter/sort form with
+            first_name (show as first name, but name should be fn)
+            last_name (show as last name, but name should be ln)
+            email (validate as text, not email, so partial match works)
+            item name
+            organization (provided) (name is organization value is the id)
+            sort/order (using allowed_columns and provided partial template)
+            limit (default 10)
+            ensure all fields prefill with request arg data if provided
+            #}
+            <!--first name-->
+            <div class="col">
+                <label class="form-label visually-hidden" for="fn">First Name</label>
+                <input type="text" id="fn" class="form-control" name="fn" placeholder="first name" value="{{request.args.get('fn') or ''}}">
+            </div>
+
+            <!--last name-->
+            <div class="col">
+                <label class="form-label visually-hidden" for="ln">Last
+                    Name</label>
+                <input type="text" id="ln" class="form-control" name="ln" placeholder="last name" value="{{request.args.get('ln') or ''}}">
+            </div>
+
+            <!--email-->
+            <div class="col">
+                <label class="form-label visually-hidden" for="email">Email</label>
+                <input type="text" id="email" class="form-control" name="email" placeholder="email" value="{{request.args.get('email') or ''}}">
+            </div>
+            <!-- item name-->
+            <div class="col">
+                <label class="form-label visually-hidden" for="ln">item name</label>
+                <input type="text" id="item_name" class="form-control" name="item_name" placeholder="item name" value="{{request.args.get('item_name') or ''}}">
+            </div>
+            <!--organization-->
+            <div class="col">
+                <label class="visually-hidden"
+                    for="organization">Organization</label>
+                {{organization_dropdown(request.args.get("organization_id"))}}
+            </div>
+            <!-- sort filter -->
+            {# TODO pass/set the columns that can be used for sort/filter (i.e. allowed_columns) #}
+            
+            {% set cols = [
+                ("donor_firstname", "donor firstname"),
+                ("donor_lastname", "donor lastname"),
+                ("donor_email", "donor email"),
+                ("organization_name", "organization name"),
+                ("item_name", "item name"),
+                ("item_description", "item description"),
+                ("item_quantity", "item quantity"),
+                ("donation_date", "donation date"),
+                ("comments", "Comments"),
+                ("created", "Created"),
+                ("modified", "Modified")
+            ] %}
+            {{sort_filter(cols=cols)}}
+            <!--limit filter-->
+            <div class="col">
+                <label class="form-label visually-hidden" for="limit">Limit</label>
+                <input class="form-control" type="number" min="1" max="100" placeholder="max records" id="limit" name="limit" value="{{request.args.get('limit') or 10}}">
+            </div>
+
+            <div class="col">
+                <input type="submit" class="btn btn-primary" value="Filter" />
+            </div>
+            <div class="col">
+                <a href="?" class="btn btn-secondary">Reset</a>
+            </div>
+        </div>
+    </form>
+    <table class="table">
+        {% if rows and rows|length > 0 %}
+        <thead>
+            <tr class="text-capitalize">
+                {# generate th tags for each column to display #}
+                {# don't show any id or organization_id columns #}
+                {# IMPORTANT use table column names as the headings, replace _ with space via filter #}
+                <!-- add th elements -->
+                
+                {% for column,v in cols %}
+                    {% if column != 'id' and column != 'organization_id' and column != 'organization_name' and column != 'created' and column != 'modified' %}
+                        <th>{{ v }}</th>
+                    {% endif %}
+                {% endfor %}
+                <th>Organization Name</th>
+                <!-- keep this -->
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {# generate tr with td tags for each piece of data #}
+            {# don't show any id or organization_id columns #}
+            {# in the last column add the following
+            an edit button that passes the donation id to donation edit
+            a delete button that passes the donation id and the request args to the donation delete route
+            #}
+            <!-- iterate over rows and generate proper tr and td elements with the data -->
+            {% for row in rows %}
+                <tr>
+                    {% for column, value in row.items() %}
+                        {% if column != 'id' and column != 'organization_id' and column != 'created' and column != 'modified' %}
+                            <td>{{value }}</td>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {# Add the edit and delete buttons in the last column #}
+                    <td>
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <a href="{{ url_for('donations.edit', id=row.id) }}" class="btn btn-outline-secondary btn-sm">Edit</a>
+                            <a href="{{ url_for('donations.delete', id=row.id, **request.args.to_dict()) }}" class="btn btn-outline-danger btn-sm">Del</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+
+        </tbody>
+        {% else %}
+        <tbody>
+            <tr>
+                <td colspan="100%">No results to show</td>
+            </tr>
+        </tbody>
+        {% endif %}
+    </table>
+</div>
+{% endblock %}

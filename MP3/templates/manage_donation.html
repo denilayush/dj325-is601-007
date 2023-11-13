@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+{% block title %}{{ "Edit" if donation.get("id") else "Create" }}
+Donation{% endblock %}
+{% block content %}
+{% from "organization_dropdown.html" import organization_dropdown %}
+<div class="container-fluid">
+    <div class="h1">{{ "Edit" if donation.get("id") else "Create" }} Donation
+    </div>
+    <div>
+        <form method="POST">
+            {#
+            generate fields with proper types for the following (keep the name/id attributes the same as the list)
+            donor_firstname (required)
+            donor_lastname (required)
+            donor_email (required)
+            item_name (required)
+            item_description (optional)
+            item_quantity (required) (>0)
+            donation_date (required) (mm/dd/yyyy)
+            comments (optional)
+            organization (provided) (required)
+            if a validation error occurs, the inserted form data should persist
+            #}
+            <!--donor first name-->
+            <div class="form-group row mb-3">
+                <label for="donor_firstname" class="col-sm-2 col-form-label">First Name</label>
+                <div class="col-sm-10">
+                <input type="text" class="form-control" id="donor_firstname" name="donor_firstname" placeholder="Firstname" value="{{donation.donor_firstname or '' }}" >
+                </div>
+            </div>
+            <!--donor last name-->
+            <div class="form-group row mb-3">
+                <label for="donor_lastname" class="col-sm-2 col-form-label">Last Name</label>
+                <div class="col-sm-10">
+                <input type="text" class="form-control" id="donor_lastname" name="donor_lastname" placeholder="Lastname" value="{{donation.donor_lastname or '' }}" >
+                </div>
+            </div>
+            <!--donor email-->
+            <div class="form-group row mb-3">
+                <label for="donor_email" class="col-sm-2 col-form-label">Donor Email</label>
+                <div class="col-sm-10">
+                <input type="text" class="form-control" id="donor_email" name="donor_email" placeholder="Email" value="{{donation.donor_email or '' }}" >
+                </div>
+            </div>
+            
+            <!--item name-->
+            <div class="form-group row mb-3">
+                <label for="item_name" class="col-sm-2 col-form-label">Item Name</label>
+                <div class="col-sm-10">
+                <input type="text" class="form-control" id="item_name" name="item_name" placeholder="Item Name" value="{{donation.item_name or '' }}" >
+                </div>
+            </div>
+            <!--item_description -->
+            <div class="form-group row mb-3">
+                    
+                    <label for="item_description" class="col-sm-2 col-form-label" >Item Description</label>
+                    <div class="col-sm-10">
+                        <textarea class="form-control" name="item_description" id="item_description">{{donation.item_description or '' }}</textarea>
+                    </div>
+            </div>
+            <!--item_quantity-->
+            <div class="form-group row mb-3">
+                <label for="item_quantity" class="col-sm-2 col-form-label">Item Quantity</label>
+                <div class="col-sm-10">
+                <input type="number" class="form-control" id="item_quantity" name="item_quantity" placeholder="Quantity" value="{{donation.item_quantity or ''}}"  min="1">
+                </div>
+            </div>
+            <!--donation date-->
+            <div class="form-group row mb-3">
+                <label for="donation_date" class="col-sm-2 col-form-label">Donation Date</label>
+                <div class="col-sm-10">
+                <input type="date" class="form-control" id="donation_date" name="donation_date" placeholder="Donation Date" value="{{donation.donation_date or ''}}" >
+                </div>
+            </div>
+            <!-- comment selection-->
+            <div class="form-group row mb-3">
+                <label for="comments" class="col-sm-2 col-form-label">Comment</label>
+                <div class="col-sm-10">
+                <input type="text" class="form-control" id="comments" name="comments" placeholder="comment" value="{{donation.comments or ''}}"  min="1">
+                </div>
+            </div>
+            <!-- organization selection-->
+            <div class="form-group row mb-3">
+                <label for="organization_id" class="col-sm-2 col-form-label">Organization</label>
+                <div class="col-sm-10">
+                    {# use the below for organization selection #}
+                    {{ organization_dropdown(val=donation.get("organization_id")) }}
+                </div>
+            </div>
+            
+
+            <div class="text-center mb-10">
+            <input type="submit" class="btn btn-primary" style="margin-bottom: 5em" value="Save Donation" />
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
