@@ -58,13 +58,8 @@ def search():
             """
     # TODO search-6 append sorting if column and order are provided and within the allows columns and allowed order asc,desc
     if column and order and column in allowed_columns and order in ("asc", "desc"):
-        if column == "created":
-            column = "organization.created"
-        if column == "modified":
-            column = "organization.modified"
-        if column == "name":
-            column = "organization.name"
-        query += f" ORDER BY {column} {order}"
+        column = "organization." + str(column)
+        query += f"ORDER BY {column} {order}"
         args['column'] = f"%{column}%"
 
    
