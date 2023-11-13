@@ -32,7 +32,7 @@ Organization{% endblock %}
                     
                 <label for="description" class="col-sm-2 col-form-label" >Description</label>
                 <div class="col-sm-10">
-                    <textarea class="form-control" name="description" id="description"> {{org.get("description") or ''}}</textarea>
+                    <textarea class="form-control" name="description" id="description">{{org.get("description") or ''}}</textarea>
                 </div>
             </div>
 
@@ -40,21 +40,21 @@ Organization{% endblock %}
             <div class="form-group row mb-3">
                 <label for="address" class="col-sm-2 col-form-label">Address</label>
                 <div class="col-sm-10">
-                <input type="text" class="form-control" id="address" name="address" placeholder="Address" value="{{org.get("address") or '' }}" >
+                <input type="text" class="form-control" id="address" name="address" placeholder="Address" value="{{org.get("address") or '' }}">
                 </div>
             </div>
             <!-- website -->
             <div class="form-group row mb-3">
                 <label for="website" class="col-sm-2 col-form-label">Website</label>
                 <div class="col-sm-10">
-                <input type="text" class="form-control" id="website" name="website" placeholder="Website" value="{{org.get("website") or '' }}" >
+                <input type="text" class="form-control" id="website" name="website" placeholder="Website" value="{{org.get("website") or ''}}">
                 </div>
             </div>
             <!-- city -->
             <div class="form-group row mb-3">
                 <label for="city" class="col-sm-2 col-form-label">City</label>
                 <div class="col-sm-10">
-                <input type="text" class="form-control" id="city" name="city" placeholder="City" value="{{org.get("city") or '' }}" >
+                <input type="text" class="form-control" id="city" name="city" placeholder="City" value="{{org.get("city") or '' }}">
                 </div>
             </div>
             {# use this for country/state selection #}
@@ -64,7 +64,7 @@ Organization{% endblock %}
             <div class="form-group row mb-3">
                 <label for="zip" class="col-sm-2 col-form-label">Zip</label>
                 <div class="col-sm-10">
-                <input type="text" class="form-control" id="zip" name="zip" placeholder="Zip" value="{{org.get("zip") or '' }}" >
+                <input type="text" class="form-control" id="zip" name="zip" placeholder="Zip" value="{{org.get("zip") or '' }}">
                 </div>
             </div>
             <div class="text-center" style="margin-bottom: 5em">

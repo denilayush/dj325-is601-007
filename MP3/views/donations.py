@@ -119,7 +119,7 @@ def add():
             flash('Email missing','danger')
             has_error = True
         # TODO add-4a email must be in proper format (flash proper message)
-        if not re.match(r"[^@]+@[^@]+\.[^@]+", donor_email):
+        if not re.match( r"^\S+@\S+\.\S+$", donor_email):
             flash("Email was not in correct",'danger')
             has_error = True
         # TODO add-5 organization_id is required (flash proper error message)
@@ -136,7 +136,7 @@ def add():
         item_description = request.form.get('item_description')
         # TODO add-8 item_quantity is required and must be more than 0 (flash proper error message)
         item_quantity = request.form.get('item_quantity')
-        if not item_quantity or item_quantity<1:
+        if not item_quantity or int(item_quantity)<1:
             flash("Item Quantity is required",'danger')
             has_error = True
         # TODO add-9 donation_date is required and must be within the past 30 days
@@ -145,7 +145,7 @@ def add():
             flash("Donation Date is required",'danger')
             has_error = True
         #print(datetime.strptime(donation_date, '%Y-%m-%d').date())
-        if datetime.now().date() - datetime.strptime(donation_date, '%Y-%m-%d').date() <= timedelta(days=30):
+        elif datetime.now().date() - datetime.strptime(donation_date, '%Y-%m-%d').date() >= timedelta(days=30):
             flash('You cannot select date past 30 days','danger')
             has_error = True
 
@@ -218,7 +218,7 @@ def edit():
                 flash("Email is Required",'danger')
                 has_error = True
             # TODO add-5a email must be in proper format (flash proper message)
-            if not re.match(r"[^@]+@[^@]+\.[^@]+", donor_email):
+            if not re.match(r"^\S+@\S+\.\S+$", donor_email):
                 flash("Email was not in correct",'danger')
                 has_error = True
             # TODO add-6 organization_id is required (flash proper error message)
@@ -231,7 +231,7 @@ def edit():
                 has_error = True
             # TODO add-8 item_description is optional
             # TODO add-9 item_quantity is required and must be more than 0 (flash proper error message)
-            if not item_quantity or item_quantity<1:
+            if not item_quantity or int(item_quantity)<1:
                 flash("Item Quantity is required",'danger')
                 has_error = True
             # TODO add-10 donation_date is required and must be within the past 30 days
@@ -239,7 +239,7 @@ def edit():
                 flash("Donation Date is required",'danger')
                 has_error = True
             #print(datetime.strptime(donation_date, '%Y-%m-%d').date())
-            if datetime.now().date() - datetime.strptime(donation_date, '%Y-%m-%d').date() <= timedelta(days=30):
+            if datetime.now().date() - datetime.strptime(donation_date, '%Y-%m-%d').date() >= timedelta(days=30):
                 flash('You cannot select date past 30 days','danger')
                 has_error = True
             # TODO add-11 comments are optional
