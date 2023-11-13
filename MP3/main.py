@@ -4,40 +4,49 @@ import sys
 from flask import Flask
 from dotenv import load_dotenv
 load_dotenv()
-import flask_login
+from flask_caching import Cache
 # added so modules can be found between the two different lookup states:
 # from tests and from regular running of the app
 CURR_DIR = os.path.dirname(os.path.abspath(__file__))
 print(CURR_DIR)
 sys.path.append(CURR_DIR)
 
-login_manager = flask_login.LoginManager()
-# app = Flask(__name__)
+cache = Cache(config={'CACHE_TYPE': 'SimpleCache'})
+
 def create_app(config_filename=''):
     app = Flask(__name__)
     app.secret_key = os.environ.get("SECRET_KEY", "missing_secret")
-    login_manager.init_app(app)
-    # app.config.from_pyfile(config_filename)
+    
+    cache.init_app(app)
     with app.app_context():
-        from views.hello import hello
-        app.register_blueprint(hello)
-        from views.sample import sample
-        app.register_blueprint(sample)
-        from auth.auth import auth
-        app.register_blueprint(auth)
+        from views.index import home
+        app.register_blueprint(home)
+        # given
+        from views.geography import geo
+        app.register_blueprint(geo)
+        
+        from views.admin import admin
+        app.register_blueprint(admin)
+        from views.organization import organization
+        app.register_blueprint(organization)
+        from views.donations import donations
+        app.register_blueprint(donations)
 
-        @login_manager.user_loader
-        def load_user(user_id):
+        # an example of making a global function available in jinja templates
+        # https://flask-caching.readthedocs.io/en/latest/
+        @app.template_global()
+        @cache.cached(timeout=30) # cache for 30 seconds since this is expensive
+        def get_orgs():
             from sql.db import DB
-            from auth.models import User
             try:
-                print("login_manager loading user")
-                result = DB.selectOne("SELECT id, email FROM IS601_Users WHERE id = %s", user_id)
+                print("get organizations")
+                # note this triggers for GET and POST
+                result = DB.selectAll("SELECT distinct id, name FROM IS601_MP3_Organizations")
                 if result.status:
-                    return User(**result.row)
+                    return result.rows or []
             except Exception as e:
                 print(e)
-            return None
+            return []
         # DON'T DELETE, this cleans up the DB connection after each request
         # this avoids sleeping queries
         @app.teardown_request 
@@ -48,6 +57,8 @@ def create_app(config_filename=''):
 
 
 app = create_app()
+
+
 
 
 if __name__ == "__main__":
