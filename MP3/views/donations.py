@@ -10,6 +10,7 @@ def search():
     organization_name = ""
     # DO NOT DELETE PROVIDED COMMENTS
     # TODO search-1 retrieve donation id as id, donor_firstname, donor_lastname, donor_email, organization_id, item_name, item_description, item_quantity, donation_date, comments, organization_name using a LEFT JOIN
+    #dj325
     query = """ 
     SELECT 
     donation.id,donor_firstname,donor_lastname,donor_email,organization_id,item_name,item_description,item_quantity,donation_date,comments,organization.name
@@ -17,6 +18,7 @@ def search():
     args = {} # <--- add values to replace %s/%(named)s placeholders
     allowed_columns = ["donor_firstname", "donor_lastname", "donor_email", "organization_name" ,"item_name", "item_quantity", "created", "modified"]
     # TODO search-2 get fn, ln, email, organization_id, column, order, limit from request args
+    #dj325
     fn = request.args.get("fn")
     ln = request.args.get("ln")
     email = request.args.get("email")
@@ -26,6 +28,7 @@ def search():
     order = request.args.get("order")
     limit = request.args.get("limit")
     # TODO search-3 append like filter for donor_firstname if provided
+    #dj325
     if fn:
         query += " AND donor_firstname LIKE %(fn)s"
         args["fn"] = f"%{fn}%"
@@ -38,6 +41,7 @@ def search():
         query += " AND donor_email LIKE %(email)s"
         args["email"] = f"%{email}%"
     # TODO search-6 append like filter for item_name if provided
+    #dj325
     if item_name:
         query += " AND item_name LIKE %(item_name)s"
         args["item_name"] = f"%{item_name}%"
@@ -53,6 +57,7 @@ def search():
         except Exception as e:
             flash(str(e), "error")
     # TODO search-8 append sorting if column and order are provided and within the allowed columns and order options (asc, desc)
+    #dj325
     if column and order and column in allowed_columns and order in ("asc", "desc"):
         if column == 'created':
             column = 'donation.created'
@@ -76,7 +81,8 @@ def search():
     # TODO search-10 provide a proper error message if limit isn't a number or if it's out of bounds
     if not limit:
         limit = 10 # TODO change this per the above requirements
-    
+        #dj325
+
     query += " LIMIT %(limit)s"
     args["limit"] = limit
     print("query",query)
@@ -103,6 +109,7 @@ def add():
     if request.method == "POST":
         # TODO add-1 retrieve form data for donor_firstname, donor_lastname, donor_email, organization_id, item_name, item_description, item_quantity, donation_date, comments
         # TODO add-2 donor_firstname is required (flash proper error message)
+        #dj325
         has_error = False # use this to control whether or not an insert occurs
         donor_firstname = request.form.get('donor_firstname')
         if not donor_firstname:
