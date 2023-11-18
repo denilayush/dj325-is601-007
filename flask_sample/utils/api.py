@@ -157,9 +157,14 @@ class API:
         return API._check_rate_limit(API_REF)
 
 
+
 if __name__ == "__main__":
     # example using https://rapidapi.com/alphavantage/api/alpha-vantage
-    querystring = {"function": "GLOBAL_QUOTE", "symbol": "MSFT", "datatype": "json"}
+    querystring = {"exact":"false","titleType":"movie"}
     
-    resp = API.get("/query", querystring)
+    def get_movie(movie,params):
+        return API.get(f"/titles/search/title/{movie}", params)
+    resp = get_movie("spider",querystring)
+
+    # resp = API.get("/query", querystring)
     print(resp)
