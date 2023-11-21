@@ -1,7 +1,7 @@
 CREATE TABLE
     IS601_Movies (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        apiId VARCHAR(16),
+        apiId VARCHAR(16) UNIQUE,
         title VARCHAR(128) NOT NULL,
         titleType VARCHAR(16) NOT NULL,
         releaseDate DATE NOT NULL,
