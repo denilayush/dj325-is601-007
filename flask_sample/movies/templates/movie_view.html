@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block title %}View Movie{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="h3">View Movie</div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row align-items-center mb-2">
+                <div class="col-2 align-self-start">
+                    <img src={{movie["imageUrl"]}} alt="Movie Image" style="width: 160px;">
+                </div>
+                <div class="col-10 align-self-end" >
+                    <ul class="list-group">
+                        {% for k,v in movie.items() %}
+                        <li class="list-group-item">{{k}} - {{v}}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <a href="{{ url_for('movies.list') }}"
+                class="btn btn-secondary">Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %} 
