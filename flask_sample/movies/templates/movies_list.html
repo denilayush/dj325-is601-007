@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}Movies{% endblock %}
+
+<!-- content -->
+<!-- dj325 20/11/23 -->
+{% block content %}
+{% from "_table_helper.html" import render_table %}
+{% set view = "movies.view" %}
+{% set edit = "movies.edit" %}
+{% set delete = "Movies.delete" %}
+<div class="container-fluid">
+    {{ render_table(rows, "Movies", ["apiId"], view, edit, delete) }}
+</div>
+{% endblock %}
