@@ -17,13 +17,13 @@ def fetch():
             
             # Fetch movie data
             result = movies.get_movie(form.title.data)
-            print(f"Debug: Result: {result}")
+            #print(f"Debug: Result: {result}")
             
             if result and result['results']:
                 countForNumberOfInsertion = 0
                 for movie in result['results']:
                     # Fetching the movie from results
-                    print(f"Debug: Movie: {movie}")
+                    #print(f"Debug: Movie: {movie}")
                     try:
                         # Formating the release date
                         release_date = f"{movie['releaseDate']['year']}-{movie['releaseDate']['month']}-{movie['releaseDate']['day']}"
@@ -48,7 +48,7 @@ def fetch():
                                 release_date,
                                 movie['primaryImage']['url']
                             )
-
+                            #print("result",db_insert_result)
                             if db_insert_result:  # Checking if insertion was successful
                                 countForNumberOfInsertion+=1
                             
