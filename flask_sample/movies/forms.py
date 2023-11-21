@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, DecimalField, validators, SubmitField
 
+#dj325 20/11/23 
 class movieSearchForm(FlaskForm):
     title = StringField('Title', [validators.Length(min=1, max=10)])
     submit = SubmitField("Find")

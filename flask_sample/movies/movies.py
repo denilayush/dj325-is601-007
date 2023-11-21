@@ -5,6 +5,7 @@ from roles.permissions import admin_permission
 
 movies = Blueprint('movies', __name__, url_prefix='/movies', template_folder='templates')
 
+#dj325 20/11/23 
 @movies.route("/fetch", methods=["GET", "POST"])
 @admin_permission.require(http_exception=403)
 def fetch():
@@ -65,6 +66,7 @@ def fetch():
             flash(f"Error loading movies record: {e}", "danger")
     return render_template("movie_search.html", form=form)
 
+#dj325 20/11/23 
 @movies.route("/list", methods=["GET"])
 @admin_permission.require(http_exception=403)
 def list():
@@ -79,6 +81,7 @@ def list():
     print(rows[0])
     return render_template("movies_list.html", rows=rows)
 
+#dj325 20/11/23 
 @movies.route("/add", methods=["GET", "POST"])
 @admin_permission.require(http_exception=403)
 def add():
@@ -96,6 +99,7 @@ def add():
             flash(f"Error creating movie record: {e}", "danger")
     return render_template("movie_form.html", form=form, type="Create")
 
+#dj325 20/11/23 
 @movies.route("/edit", methods=["GET", "POST"])
 @admin_permission.require(http_exception=403)
 def edit():
@@ -127,6 +131,7 @@ def edit():
     return render_template("movie_form.html", form=form, type="Edit")
 
 
+#dj325 20/11/23 
 @movies.route("/view", methods=["GET"])
 def view():
     id = request.args.get("id")
@@ -147,6 +152,7 @@ def view():
         flash("Error fetching Movie record", "danger")
     return redirect(url_for("movies.list"))
 
+#dj325 20/11/23 
 @movies.route("/delete", methods=["GET"])
 @admin_permission.require(http_exception=403)
 def delete():
