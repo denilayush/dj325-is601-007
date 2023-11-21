@@ -64,3 +64,17 @@ def fetch():
         except Exception as e:
             flash(f"Error loading movies record: {e}", "danger")
     return render_template("movie_search.html", form=form)
+
+@movies.route("/list", methods=["GET"])
+@admin_permission.require(http_exception=403)
+def list():
+    rows = []
+    try:
+        result = DB.selectAll("SELECT apiId, title, titleType, releaseDate, imageUrl FROM IS601_Movies LIMIT 100")
+        if result.status and result.rows:
+            rows = result.rows
+    except Exception as e:
+        print(e)
+        flash("Error getting movie records", "danger")
+    print(rows[0])
+    return render_template("movies_list.html", rows=rows)
