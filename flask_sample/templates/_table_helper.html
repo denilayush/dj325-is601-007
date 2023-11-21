@@ -5,7 +5,7 @@
     {% endif %}
     <table class="table {{ table_class }}">
         <thead>
-            {% if data and data|length > 0 %}
+            {% if data and data|length > 1 %}
             <!-- dj325 20/11/23  -->
             <tr class="text-capitalize">
                 {% for r in data[0] %}
