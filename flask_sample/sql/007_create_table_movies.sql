@@ -1,0 +1,12 @@
+#dj325 18/11/23
+CREATE TABLE
+    IS601_Movies (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        apiId VARCHAR(16) UNIQUE,
+        title VARCHAR(128) NOT NULL,
+        titleType VARCHAR(16) NOT NULL,
+        releaseDate DATE NOT NULL,
+        imageUrl VARCHAR(256),
+        created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    );
