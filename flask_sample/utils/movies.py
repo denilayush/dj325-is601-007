@@ -11,8 +11,8 @@ if __name__ == "__main__":
 from utils.api import API
 class movies(API):
     @staticmethod
-    def get_movie(movie,params):
-        return API.get(f"/titles/search/title/{movie}", params)
+    def get_movie(movie,params = {"exact":"false"}):
+        return API.get(f"/titles/search/title/{movie}", params )
 
 if __name__ == "__main__":
     querystring = {"exact":"false","titleType":"movie"}

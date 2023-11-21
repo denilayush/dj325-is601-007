@@ -13,24 +13,54 @@ def fetch():
         try:
             from utils.movies import movies
             from utils.lazy import DictToObject
-            # Create a new movie record in the database
-            result = movies.quote(form.title.data)
-            if result:
-                result = DictToObject(result)
-                result = DB.insertOne(
-                    """INSERT INTO IS601_Movies (apiId, title, titleType, releaseDate, imageUrl)
-                        VALUES (%s, %s, %s, %s, %s)
-                        ON DUPLICATE KEY UPDATE
-                        apiId = VALUES(apiId),
-                        title = VALUES(title),
-                        titleType = VALUES(titleType),
-                        releaseDate = VALUES(releaseDate),
-                        imageUrl = VALUES(imageUrl)
-                        """,
-                    result.title, result.tilteType, result.releaseDate, result.imageUrl
-                )
-                if result.status:
-                    flash(f"Loaded movies record for {form.tilte.data}", "success")
+            
+            # Fetch movie data
+            result = movies.get_movie(form.title.data)
+            print(f"Debug: Result: {result}")
+            
+            if result and result['results']:
+                countForNumberOfInsertion = 0
+                for movie in result['results']:
+                    # Fetching the movie from results
+                    print(f"Debug: Movie: {movie}")
+                    try:
+                        # Formating the release date
+                        release_date = f"{movie['releaseDate']['year']}-{movie['releaseDate']['month']}-{movie['releaseDate']['day']}"
+                        
+                        if movie['primaryImage'] is not None:  # Checking if primaryImage is not None
+                            query = """
+                                INSERT INTO IS601_Movies (apiId, title, titleType, releaseDate, imageUrl)
+                                VALUES (%s, %s, %s, %s, %s)
+                                ON DUPLICATE KEY UPDATE
+                                apiId = VALUES(apiId),
+                                title = VALUES(title),
+                                titleType = VALUES(titleType),
+                                releaseDate = VALUES(releaseDate),
+                                imageUrl = VALUES(imageUrl)
+                            """
+
+                            db_insert_result = DB.insertOne(
+                                query,
+                                movie['id'],
+                                movie['originalTitleText']['text'],
+                                movie['titleType']['text'],
+                                release_date,
+                                movie['primaryImage']['url']
+                            )
+
+                            if db_insert_result:  # Checking if insertion was successful
+                                countForNumberOfInsertion+=1
+                            
+                        
+                    except Exception as e:
+                        pass
+                if countForNumberOfInsertion>0:
+                    flash(f"Loaded {countForNumberOfInsertion} movies", "success")
+                else:
+                    flash(f"Not loaded any movies", "success")
+
+            else:
+                flash("No results found for the movie", "warning")
         except Exception as e:
             flash(f"Error loading movies record: {e}", "danger")
     return render_template("movie_search.html", form=form)
