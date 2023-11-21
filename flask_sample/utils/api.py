@@ -6,6 +6,7 @@ import sys
 CURR_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Add the parent directory to the Python path
+#dj325 18/11/23
 PARENT_DIR = os.path.join(CURR_DIR, "..")  # Go up one level from utils to project folder
 sys.path.append(PARENT_DIR)
 from dotenv import load_dotenv
@@ -18,6 +19,7 @@ class HTTP(Enum):
     GET = 1
     POST = 2
 
+#dj325 18/11/23
 class API:
     @staticmethod
     def _get_config(API_REF="API"):
@@ -157,9 +159,15 @@ class API:
         return API._check_rate_limit(API_REF)
 
 
+
 if __name__ == "__main__":
+    #dj325 18/11/23
     # example using https://rapidapi.com/alphavantage/api/alpha-vantage
-    querystring = {"function": "GLOBAL_QUOTE", "symbol": "MSFT", "datatype": "json"}
+    querystring = {"exact":"false","titleType":"movie"}
     
-    resp = API.get("/query", querystring)
+    def get_movie(movie,params):
+        return API.get(f"/titles/search/title/{movie}", params)
+    resp = get_movie("spider",querystring)
+
+    # resp = API.get("/query", querystring)
     print(resp)
