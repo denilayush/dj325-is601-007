@@ -78,3 +78,89 @@ def list():
         flash("Error getting movie records", "danger")
     print(rows[0])
     return render_template("movies_list.html", rows=rows)
+
+@movies.route("/add", methods=["GET", "POST"])
+@admin_permission.require(http_exception=403)
+def add():
+    form = movieForm()
+    if form.validate_on_submit():
+        try:
+            # Create a new movie record in the database
+            result = DB.insertOne(
+                "INSERT INTO IS601_Movies (title, titleType, releaseDate, imageUrl) VALUES (%s, %s, %s, %s)",
+                form.title.data, form.titleType.data, form.releaseDate.data, form.imageUrl.data
+            )
+            if result.status:
+                flash(f"Created movie record for {form.title.data}", "success")
+        except Exception as e:
+            flash(f"Error creating movie record: {e}", "danger")
+    return render_template("movie_form.html", form=form, type="Create")
+
+@movies.route("/edit", methods=["GET", "POST"])
+@admin_permission.require(http_exception=403)
+def edit():
+    form = movieForm()
+    id = request.args.get("id")
+    if id is None:
+        flash("Missing ID", "danger")
+        return redirect(url_for("movies.list"))
+    if form.validate_on_submit() and id:
+        try:
+            # Update the existing movie record in the database
+            result = DB.insertOne(
+                "UPDATE IS601_Movies SET title = %s, titleType = %s, releaseDate = %s, imageUrl = %s WHERE id = %s",
+                form.title.data, form.titleType.data, form.releaseDate.data, form.imageUrl.data, id
+            )
+            if result.status:
+                flash(f"Updated movie record for {form.title.data}", "success")
+        except Exception as e:
+            flash(f"Error updating movie record: {e}", "danger")
+    try:
+        result = DB.selectOne(
+            "SELECT title, titleType, releaseDate, imageUrl FROM IS601_Movies WHERE id = %s",
+            id
+        )
+        if result.status and result.row:
+            form = movieForm(data=result.row)
+    except Exception as e:
+        flash("Error fetching movie record", "danger")
+    return render_template("movie_form.html", form=form, type="Edit")
+
+
+@movies.route("/view", methods=["GET"])
+def view():
+    id = request.args.get("id")
+    if id is None:
+        flash("Missing ID", "danger")
+        return redirect(url_for("movies.list"))
+    try:
+        result = DB.selectOne(
+            "SELECT title, titleType, releaseDate, imageUrl FROM IS601_Movies WHERE id = %s",
+            id
+        )
+        if result.status and result.row:
+            return render_template("movie_view.html", movie=result.row)
+        else:
+            flash("Movie record not found", "danger")
+    except Exception as e:
+        print(f"Movie error {e}")
+        flash("Error fetching Movie record", "danger")
+    return redirect(url_for("movies.list"))
+
+@movies.route("/delete", methods=["GET"])
+@admin_permission.require(http_exception=403)
+def delete():
+    id = request.args.get("id")
+    args = {**request.args}
+    if id:
+        try:
+            # Delete the movie record from the database
+            result = DB.delete("DELETE FROM IS601_Movies WHERE id = %s", id)
+            if result.status:
+                flash("Deleted movie record", "success")
+        except Exception as e:
+            flash(f"Error deleting movie record: {e}", "danger")
+        del args["id"]
+    else:
+        flash("No ID present", "warning")
+    return redirect(url_for("movies.list", **args))
