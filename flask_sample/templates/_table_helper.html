@@ -6,9 +6,10 @@
     <table class="table {{ table_class }}">
         <thead>
             {% if data and data|length > 0 %}
+            <!-- dj325 20/11/23  -->
             <tr class="text-capitalize">
                 {% for r in data[0] %}
-                {% if r not in ignored and r != "apiId" %}
+                {% if r not in ignored %}
                 <th>{{ r }}</th>
                 {% endif %}
                 {% endfor %}
@@ -21,8 +22,9 @@
         <tbody>
             {% for r in data %}
             <tr>
+                <!-- dj325 20/11/23  -->
                 {% for k, v in r.items() %}
-                {% if k not in ignored and k != "apiId" %}
+                {% if k not in ignored %}
                     {% if k == "imageUrl" %}
                     <td><img src={{v}} alt="movies" width="100" 
                         height="100"></td>
