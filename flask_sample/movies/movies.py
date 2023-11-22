@@ -71,11 +71,16 @@ def fetch():
 @admin_permission.require(http_exception=403)
 def list():
     searchForm = movieFilterForm(request.args)
-    query = "SELECT apiId, title, titleType, releaseDate, imageUrl FROM IS601_Movies WHERE 1 = 1"
+    query = "SELECT id, apiId, title, titleType, releaseDate, imageUrl FROM IS601_Movies WHERE 1 = 1"
     args = {}
     if searchForm.title.data:
         query += " AND title LIKE %(title)s"
         args["title"] = f"%{searchForm.title.data}%"
+
+    if searchForm.titleType.data:
+        query += " AND titleType LIKE %(titleType)s"
+        args["titleType"] = f"%{searchForm.titleType.data}%"
+    
 
     query += " LIMIT 100"
     if searchForm.validate_on_submit():
