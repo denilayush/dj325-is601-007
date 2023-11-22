@@ -25,6 +25,6 @@
         </div>
     </form>
 
-    {{ render_table(rows, "Movies", [], view, edit, delete) }}
+    {{ render_table(rows, "Movies", ["id", "apiId"], view, edit, delete) }}
 </div>
 {% endblock %}
