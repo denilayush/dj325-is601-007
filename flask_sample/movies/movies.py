@@ -30,14 +30,14 @@ def fetch():
                         
                         if movie['primaryImage'] is not None:  # Checking if primaryImage is not None
                             query = """
-                                INSERT INTO IS601_Movies (apiId, title, titleType, releaseDate, imageUrl)
+                                INSERT INTO IS601_Movies (api_id, title, title_type, release_date, image_url)
                                 VALUES (%s, %s, %s, %s, %s)
                                 ON DUPLICATE KEY UPDATE
-                                apiId = VALUES(apiId),
+                                api_id = VALUES(api_id),
                                 title = VALUES(title),
-                                titleType = VALUES(titleType),
-                                releaseDate = VALUES(releaseDate),
-                                imageUrl = VALUES(imageUrl)
+                                title_type = VALUES(title_type),
+                                release_date = VALUES(release_date),
+                                image_url = VALUES(image_url)
                             """
 
                             db_insert_result = DB.insertOne(
@@ -71,20 +71,20 @@ def fetch():
 @admin_permission.require(http_exception=403)
 def list():
     searchForm = movieFilterForm(request.args)
-    query = "SELECT id, apiId, title, titleType, releaseDate, imageUrl FROM IS601_Movies WHERE 1 = 1"
+    query = "SELECT id, api_id, title, title_type, release_date, image_url FROM IS601_Movies WHERE 1 = 1"
     args = {}
     if searchForm.title.data:
         query += " AND title LIKE %(title)s"
         args["title"] = f"%{searchForm.title.data}%"
 
-    if searchForm.titleType.data:
-        query += " AND titleType LIKE %(titleType)s"
-        args["titleType"] = f"%{searchForm.titleType.data}%"
+    if searchForm.title_type.data:
+        query += " AND title_type LIKE %(title_type)s"
+        args["title_type"] = f"%{searchForm.title_type.data}%"
     
-    if searchForm.releaseDateStart.data and searchForm.releaseDateEnd.data :
-        query += " AND releaseDate >= %(releaseDateStart)s AND releaseDate <= %(releaseDateEnd)s"
-        args["releaseDateStart"] = f"{searchForm.releaseDateStart.data}"
-        args["releaseDateEnd"] = f"{searchForm.releaseDateEnd.data}"
+    if searchForm.release_dateStart.data and searchForm.release_dateEnd.data :
+        query += " AND release_date >= %(release_dateStart)s AND release_date <= %(release_dateEnd)s"
+        args["release_dateStart"] = f"{searchForm.release_dateStart.data}"
+        args["release_dateEnd"] = f"{searchForm.release_dateEnd.data}"
     
     
     if searchForm.sort.data and searchForm.order.data:
@@ -116,8 +116,8 @@ def add():
         try:
             # Create a new movie record in the database
             result = DB.insertOne(
-                "INSERT INTO IS601_Movies (title, titleType, releaseDate, imageUrl) VALUES (%s, %s, %s, %s)",
-                form.title.data, form.titleType.data, form.releaseDate.data, form.imageUrl.data
+                "INSERT INTO IS601_Movies (title, title_type, release_date, image_url) VALUES (%s, %s, %s, %s)",
+                form.title.data, form.title_type.data, form.release_date.data, form.image_url.data
             )
             if result.status:
                 flash(f"Created movie record for {form.title.data}", "success")
@@ -138,8 +138,8 @@ def edit():
         try:
             # Update the existing movie record in the database
             result = DB.insertOne(
-                "UPDATE IS601_Movies SET title = %s, titleType = %s, releaseDate = %s, imageUrl = %s WHERE id = %s",
-                form.title.data, form.titleType.data, form.releaseDate.data, form.imageUrl.data, id
+                "UPDATE IS601_Movies SET title = %s, title_type = %s, release_date = %s, image_url = %s WHERE id = %s",
+                form.title.data, form.title_type.data, form.release_date.data, form.image_url.data, id
             )
             if result.status:
                 flash(f"Updated movie record for {form.title.data}", "success")
@@ -147,7 +147,7 @@ def edit():
             flash(f"Error updating movie record: {e}", "danger")
     try:
         result = DB.selectOne(
-            "SELECT title, titleType, releaseDate, imageUrl FROM IS601_Movies WHERE id = %s",
+            "SELECT title, title_type, release_date, image_url FROM IS601_Movies WHERE id = %s",
             id
         )
         if result.status and result.row:
@@ -166,7 +166,7 @@ def view():
         return redirect(url_for("movies.list"))
     try:
         result = DB.selectOne(
-            "SELECT apiId, title, titleType, releaseDate, imageUrl FROM IS601_Movies WHERE id = %s",
+            "SELECT api_id, title, title_type, release_date, image_url FROM IS601_Movies WHERE id = %s",
             id
         )
         if result.status and result.row:
