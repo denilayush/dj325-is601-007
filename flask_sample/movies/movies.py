@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, render_template, request, redirect, url_for
 from sql.db import DB  # Import your DB class
-from movies.forms import movieForm, movieSearchForm  # Import your movieForm class
+from movies.forms import movieForm, movieSearchForm, movieFilterForm  # Import your movieForm class
 from roles.permissions import admin_permission
 
 movies = Blueprint('movies', __name__, url_prefix='/movies', template_folder='templates')
@@ -70,16 +70,42 @@ def fetch():
 @movies.route("/list", methods=["GET"])
 @admin_permission.require(http_exception=403)
 def list():
+    searchForm = movieFilterForm(request.args)
+    query = "SELECT id, apiId, title, titleType, releaseDate, imageUrl FROM IS601_Movies WHERE 1 = 1"
+    args = {}
+    if searchForm.title.data:
+        query += " AND title LIKE %(title)s"
+        args["title"] = f"%{searchForm.title.data}%"
+
+    if searchForm.titleType.data:
+        query += " AND titleType LIKE %(titleType)s"
+        args["titleType"] = f"%{searchForm.titleType.data}%"
+    
+    if searchForm.releaseDateStart.data and searchForm.releaseDateEnd.data :
+        query += " AND releaseDate >= %(releaseDateStart)s AND releaseDate <= %(releaseDateEnd)s"
+        args["releaseDateStart"] = f"{searchForm.releaseDateStart.data}"
+        args["releaseDateEnd"] = f"{searchForm.releaseDateEnd.data}"
+    
+    
+    if searchForm.sort.data and searchForm.order.data:
+        query += f" ORDER BY {searchForm.sort.data} {searchForm.order.data}"
+    query += " LIMIT 100"
+    if searchForm.validate_on_submit():
+        pass
+    else:
+        print(searchForm.errors)
+    
     rows = []
+    print(query,args)
     try:
-        result = DB.selectAll("SELECT apiId, title, titleType, releaseDate, imageUrl FROM IS601_Movies LIMIT 100")
+        result = DB.selectAll(query, args)
         if result.status and result.rows:
             rows = result.rows
     except Exception as e:
         print(e)
         flash("Error getting movie records", "danger")
-    print(rows[0])
-    return render_template("movies_list.html", rows=rows)
+    #print(rows[0])
+    return render_template("movies_list.html", rows=rows, form=searchForm)
 
 #dj325 20/11/23 
 @movies.route("/add", methods=["GET", "POST"])
