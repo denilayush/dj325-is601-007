@@ -87,7 +87,10 @@ def list():
         args["releaseDateEnd"] = f"{searchForm.releaseDateEnd.data}"
     
     
-
+    if searchForm.sort.data and searchForm.order.data:
+        args["sort"] = f"{searchForm.sort.data}"
+        args["order"] = f"{searchForm.order.data}"
+        query += f" ORDER BY {args['sort']} {args['order']}"
     query += " LIMIT 100"
     if searchForm.validate_on_submit():
         pass

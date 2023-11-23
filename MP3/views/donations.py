@@ -192,6 +192,7 @@ def edit():
     row = {}
     
     # TODO edit-1 request args id is required (flash proper error message)
+    #dj325
     id = False
     id = request.args.get('id')
     if not id: # TODO update this for TODO edit-1
@@ -233,6 +234,7 @@ def edit():
                 flash('Organization ID is required','danger')
                 has_error = True
             # TODO add-7 item_name is required (flash proper error message)
+            #dj325
             if not item_name:
                 flash("Item Name is required",'danger')
                 has_error = True
@@ -250,7 +252,7 @@ def edit():
                 flash('You cannot select date past 30 days','danger')
                 has_error = True
             # TODO add-11 comments are optional
-                
+            #dj325
             if not has_error:
                 try:
                     # TODO edit-12 fill in proper update query
@@ -310,7 +312,7 @@ def edit():
                 row = result.row
         except Exception as e:
             # TODO edit-15 make this user-friendly
-            flash(str(e), "danger")
+            flash("You have not filled details correctly", "danger")
     
     return render_template("manage_donation.html", donation=row)
 
@@ -321,6 +323,7 @@ def delete():
     # TODO delete-3 ensure a flash message shows for successful delete
     # TODO delete-4 pass all argument except id to this route
     # TODO delete-5 redirect to donation search
+    #dj325 date 12/11/23
     id = request.args.get('id')
     args = {**request.args}
     if not id:

@@ -12,7 +12,7 @@
 <div class="container-fluid">
 
     <form method="GET">
-        <div class="row ">
+        <div class="row " style="align-items: center;">
             {% for field in form %}
             {% if field.name != 'csrf_token' %}
             <div class="col">
@@ -20,8 +20,10 @@
             </div>
             {% endif %}
             {% endfor %}
-            {{ form.hidden_tag() }}
-            {{ form.submit(class="btn btn-primary") }}
+            <div class="col"> 
+                {{ form.hidden_tag() }}
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
         </div>
     </form>
 
