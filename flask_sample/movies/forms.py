@@ -20,6 +20,6 @@ class movieFilterForm(FlaskForm):
     titleType = StringField('Type', [Optional()])
     releaseDateStart = DateField('Release Date Start',format='%Y-%m-%d')
     releaseDateEnd = DateField('Release Date End',format='%Y-%m-%d', default=datetime.today())
-    sort = SelectField("Columns", [Optional()], choices=[])
+    sort = SelectField("Columns", [Optional()], choices=[("title", "Title"),("titleType","TitleType"),("releaseDate","ReleaseDate")])
     order = SelectField("Order", [Optional()], choices=[("asc","+"), ("desc","-")])
     submit = SubmitField("Search")
