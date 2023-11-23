@@ -81,6 +81,12 @@ def list():
         query += " AND titleType LIKE %(titleType)s"
         args["titleType"] = f"%{searchForm.titleType.data}%"
     
+    if searchForm.releaseDateStart.data and searchForm.releaseDateEnd.data :
+        query += " AND releaseDate >= %(releaseDateStart)s AND releaseDate <= %(releaseDateEnd)s"
+        args["releaseDateStart"] = f"{searchForm.releaseDateStart.data}"
+        args["releaseDateEnd"] = f"{searchForm.releaseDateEnd.data}"
+    
+    
 
     query += " LIMIT 100"
     if searchForm.validate_on_submit():
