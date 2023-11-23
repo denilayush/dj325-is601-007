@@ -25,12 +25,12 @@
                 <!-- dj325 20/11/23  -->
                 {% for k, v in r.items() %}
                 {% if k not in ignored %}
-                    {% if k == "imageUrl" %}
+                    {% if k == "image_url" %}
                     <td><img src={{v}} alt="movies" width="100" 
                         height="100"></td>
                     {% endif %}
                     
-                    {% if k != "imageUrl" %}
+                    {% if k != "image_url" %}
                     <td>{{ v }}</td>
                     {% endif %}
 

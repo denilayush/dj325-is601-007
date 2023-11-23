@@ -9,17 +9,17 @@ class movieSearchForm(FlaskForm):
     submit = SubmitField("Find")
 class movieForm(FlaskForm):
     title = StringField('Title', [validators.Length(min=1, max=128)])
-    titleType = StringField('Type', [validators.Length(min=1, max=16)])
-    releaseDate = StringField('Release Date (YYYY-MM-DD)', [validators.Regexp(r'^\d{4}-\d{2}-\d{2}$', message="Invalid date format")])
-    imageUrl = StringField('Image URL', [validators.Length(min=1, max=256)])
+    title_type = StringField('Type', [validators.Length(min=1, max=16)])
+    release_date = StringField('Release Date (YYYY-MM-DD)', [validators.Regexp(r'^\d{4}-\d{2}-\d{2}$', message="Invalid date format")])
+    image_url = StringField('Image URL', [validators.Length(min=1, max=256)])
     submit = SubmitField("Save")
 
 
 class movieFilterForm(FlaskForm):
     title = StringField("Title", [Optional()])
-    titleType = StringField('Type', [Optional()])
-    releaseDateStart = DateField('Release Date Start',format='%Y-%m-%d')
-    releaseDateEnd = DateField('Release Date End',format='%Y-%m-%d', default=datetime.today())
-    sort = SelectField("Columns", [Optional()], choices=[("title", "Title"),("titleType","TitleType"),("releaseDate","ReleaseDate")])
+    title_type = StringField('Type', [Optional()])
+    release_dateStart = DateField('Release Date Start',format='%Y-%m-%d')
+    release_dateEnd = DateField('Release Date End',format='%Y-%m-%d', default=datetime.today())
+    sort = SelectField("Columns", [Optional()], choices=[("title", "Title"),("title_type","Type"),("release_date","Release Date")])
     order = SelectField("Order", [Optional()], choices=[("asc","+"), ("desc","-")])
     submit = SubmitField("Search")
