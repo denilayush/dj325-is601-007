@@ -166,7 +166,7 @@ def view():
         return redirect(url_for("movies.list"))
     try:
         result = DB.selectOne(
-            "SELECT title, titleType, releaseDate, imageUrl FROM IS601_Movies WHERE id = %s",
+            "SELECT apiId, title, titleType, releaseDate, imageUrl FROM IS601_Movies WHERE id = %s",
             id
         )
         if result.status and result.row:
