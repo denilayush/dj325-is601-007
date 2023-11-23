@@ -12,7 +12,8 @@
         {% endif %}
         {% endfor %}
         {{ form.hidden_tag() }}
-        {{ form.submit(class="btn btn-primary") }}
+        {{ form.submit(class="btn btn-primary mb-2 mt-2") }}
     </form>
+    <a href="{{ url_for('movies.list') }}" class="btn btn-secondary">Back</a>
 </div>
 {% endblock %}

@@ -2,13 +2,31 @@
 {% block title %}Movies{% endblock %}
 
 <!-- content -->
-<!-- dj325 20/11/23 -->
 {% block content %}
+{% from "_formhelpers.html" import render_field %}
 {% from "_table_helper.html" import render_table %}
+
 {% set view = "movies.view" %}
 {% set edit = "movies.edit" %}
-{% set delete = "Movies.delete" %}
+{% set delete = "movies.delete" %}
 <div class="container-fluid">
-    {{ render_table(rows, "Movies", ["apiId"], view, edit, delete) }}
+
+    <form method="GET">
+        <div class="row " style="align-items: center;">
+            {% for field in form %}
+            {% if field.name != 'csrf_token' %}
+            <div class="col">
+                {{ render_field(field) }}
+            </div>
+            {% endif %}
+            {% endfor %}
+            <div class="col"> 
+                {{ form.hidden_tag() }}
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </div>
+    </form>
+
+    {{ render_table(rows, "Movies", ["id", "apiId"], view, edit, delete) }}
 </div>
 {% endblock %}
