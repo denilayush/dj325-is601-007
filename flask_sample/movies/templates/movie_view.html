@@ -9,9 +9,9 @@
         <div class="card-body">
             <div class="row align-items-center mb-2">
                 <div class="col-2 align-self-start">
-                    <img src={{movie["imageUrl"]}} alt="Movie Image" style="width: 160px;">
+                    <img src={{movie["imageUrl"]}} alt="Movie Image" class="img-fluid">
                 </div>
-                <div class="col-10 align-self-end" >
+                <div class="col-10 align-self-center" >
                     <ul class="list-group">
                         {% for k,v in movie.items() %}
                         <li class="list-group-item">{{k}} - {{v}}</li>
@@ -19,9 +19,9 @@
                     </ul>
                 </div>
             </div>
-            <a href="{{ url_for('movies.list') }}"
-                class="btn btn-secondary">Back</a>
         </div>
+        <a href="{{ url_for('movies.list') }}"
+            class="btn btn-secondary">Back</a>
     </div>
 </div>
 {% endblock %} 
