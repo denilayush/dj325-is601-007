@@ -12,21 +12,21 @@
 <div class="container-fluid">
 
     <form method="GET">
-        <div class="row " style="align-items: center;">
+        <div class="row " style="align-items: end;">
             {% for field in form %}
-            {% if field.name != 'csrf_token' %}
+            {% if field.name != 'csrf_token' and field.name != "submit" %}
             <div class="col">
                 {{ render_field(field) }}
             </div>
             {% endif %}
             {% endfor %}
-            <div class="col"> 
+            <div class="col d-grid gap-2"> 
                 {{ form.hidden_tag() }}
                 {{ form.submit(class="btn btn-primary") }}
             </div>
         </div>
     </form>
 
-    {{ render_table(rows, "Movies", ["id", "api_id"], view, edit, delete) }}
+    {{ render_table(rows, "Movies", ["id", "api_id"], view, edit, delete,"table-striped table-bordered table-hover") }}
 </div>
 {% endblock %}
