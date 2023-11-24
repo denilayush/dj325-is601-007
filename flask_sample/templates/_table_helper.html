@@ -1,7 +1,7 @@
 {% macro render_table(data, title=None, ignored=[], view=None, edit=None, delete=None, table_class="") %}
-<div class="container-fluid">
+<div class="container-fluid" style="padding: 5px;">
     {% if title %}
-    <div class="h1">{{ title }}</div>
+    <div class="h1" style="text-align: center; padding: 1px; color: aliceblue; background: black; border-top-left-radius: 25px; border-top-right-radius: 25px;">{{ title }}</div>
     {% endif %}
     <table class="table {{ table_class }}">
         <thead>
@@ -10,7 +10,7 @@
             <tr class="text-capitalize">
                 {% for r in data[0] %}
                 {% if r not in ignored %}
-                <th>{{ r }}</th>
+                <th>{{ r.replace("_"," ") }}</th>
                 {% endif %}
                 {% endfor %}
                 {% if view or edit or delete %}
