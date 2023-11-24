@@ -1,4 +1,4 @@
-{% macro render_table(data, title=None, ignored=[], view=None, edit=None, delete=None, table_class="") %}
+{% macro render_table(data, title=None, ignored=[], view=None, edit=None, delete=None, table_class="",current_user="") %}
 <div class="container-fluid" style="padding: 5px;">
     {% if title %}
     <div class="h1" style="text-align: center; padding: 1px; color: aliceblue; background: black; border-top-left-radius: 25px; border-top-right-radius: 25px;">{{ title }}</div>
@@ -41,10 +41,10 @@
                     {% if view and r["id"] %}
                     <a href="{{ url_for(view) }}?id={{ r['id'] }}" class="btn btn-outline-secondary btn-sm">View</a>
                     {% endif %}
-                    {% if edit and r["id"] %}
+                    {% if edit and r["id"] and current_user.has_role("Admin") %}
                     <a href="{{ url_for(edit) }}?id={{ r['id'] }}" class="btn btn-secondary btn-sm">Edit</a>
                     {% endif %}
-                    {% if delete and r["id"] %}
+                    {% if delete and r["id"] and current_user.has_role("Admin")%}
                     <a href="{{ url_for(delete) }}?id={{ r['id'] }}" class="btn btn-danger btn-sm">Delete</a>
                     {% endif %}
                 </td>
