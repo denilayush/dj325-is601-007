@@ -2,6 +2,7 @@ from flask import Blueprint, flash, render_template, request, redirect, url_for
 from sql.db import DB  # Import your DB class
 from movies.forms import movieForm, movieSearchForm, movieFilterForm  # Import your movieForm class
 from roles.permissions import admin_permission
+from flask_login import current_user
 
 movies = Blueprint('movies', __name__, url_prefix='/movies', template_folder='templates')
 
@@ -68,7 +69,7 @@ def fetch():
 
 #dj325 20/11/23 
 @movies.route("/list", methods=["GET"])
-@admin_permission.require(http_exception=403)
+#@admin_permission.require(http_exception=403)
 def list():
     searchForm = movieFilterForm(request.args)
     query = "SELECT id, api_id, title, title_type, release_date, image_url FROM IS601_Movies WHERE 1 = 1"
@@ -89,7 +90,9 @@ def list():
     
     if searchForm.sort.data and searchForm.order.data:
         query += f" ORDER BY {searchForm.sort.data} {searchForm.order.data}"
-    query += " LIMIT 100"
+    
+    if searchForm.limit.data:
+        query += f" LIMIT {searchForm.limit.data}"
     if searchForm.validate_on_submit():
         pass
     else:
@@ -105,7 +108,7 @@ def list():
         print(e)
         flash("Error getting movie records", "danger")
     #print(rows[0])
-    return render_template("movies_list.html", rows=rows, form=searchForm)
+    return render_template("movies_list.html", rows=rows, form=searchForm,current_user=current_user)
 
 #dj325 20/11/23 
 @movies.route("/add", methods=["GET", "POST"])
@@ -147,7 +150,7 @@ def edit():
             flash(f"Error updating movie record: {e}", "danger")
     try:
         result = DB.selectOne(
-            "SELECT title, title_type, release_date, image_url FROM IS601_Movies WHERE id = %s",
+            "SELECT id, api_id , title, title_type, release_date, image_url, created, modified FROM IS601_Movies WHERE id = %s",
             id
         )
         if result.status and result.row:
@@ -166,11 +169,11 @@ def view():
         return redirect(url_for("movies.list"))
     try:
         result = DB.selectOne(
-            "SELECT api_id, title, title_type, release_date, image_url FROM IS601_Movies WHERE id = %s",
+            "SELECT id, api_id, title, title_type, release_date, image_url FROM IS601_Movies WHERE id = %s",
             id
         )
         if result.status and result.row:
-            return render_template("movie_view.html", movie=result.row)
+            return render_template("movie_view.html", movie=result.row,current_user=current_user, movie_id = id)
         else:
             flash("Movie record not found", "danger")
     except Exception as e:
