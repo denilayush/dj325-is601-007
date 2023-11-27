@@ -27,6 +27,6 @@
         </div>
     </form>
 
-    {{ render_table(rows, "Movies", ["id", "api_id"], view, edit, delete,"table-striped table-bordered table-hover") }}
+    {{ render_table(rows, "Movies", ["id", "api_id"], view, edit, delete,"table-striped table-bordered table-hover",current_user) }}
 </div>
 {% endblock %}
