@@ -52,8 +52,8 @@
             </tr>
             {% endfor %}
             {% if not data %}
-            <tr>
-                <td colspan="100%">No results</td>
+            <tr class="text-center table-warning">
+                <td colspan="100%" style="color: red;"><marquee behavior="alternate" direction="right">No results</marquee></td>
             </tr>
             {% endif %}
         </tbody>
