@@ -80,7 +80,7 @@ def list():
 
     if searchForm.title_type.data:
         query += " AND title_type LIKE %(title_type)s"
-        args["title_type"] = f"%{searchForm.title_type.data}%"
+        args["title_type"] = f"{searchForm.title_type.data}"
     
     if searchForm.release_dateStart.data and searchForm.release_dateEnd.data :
         query += " AND release_date >= %(release_dateStart)s AND release_date <= %(release_dateEnd)s"
@@ -117,15 +117,28 @@ def add():
     form = movieForm()
     if form.validate_on_submit():
         try:
-            # Create a new movie record in the database
-            result = DB.insertOne(
-                "INSERT INTO IS601_Movies (title, title_type, release_date, image_url) VALUES (%s, %s, %s, %s)",
-                form.title.data, form.title_type.data, form.release_date.data, form.image_url.data
+            print(form.title.data.lower(),
+            form.title_type.data.lower(),
+            form.release_date.data)
+            query = f"SELECT title, title_type, release_date FROM IS601_Movies WHERE LOWER(title) = '{str(form.title.data.lower())}' AND LOWER(title_type) = '{str(form.title_type.data.lower())}' AND release_date = '{str(form.release_date.data)}'"
+            print(query)
+            result = DB.selectAll(query, {}
             )
-            if result.status:
-                flash(f"Created movie record for {form.title.data}", "success")
+            # print(result)
+            if result.status and result.rows[0]:
+                flash("Already Available","warning")
         except Exception as e:
-            flash(f"Error creating movie record: {e}", "danger")
+            print(e)
+            try:
+                # Create a new movie record in the database
+                result = DB.insertOne(
+                    "INSERT INTO IS601_Movies (title, title_type, release_date, image_url) VALUES (%s, %s, %s, %s)",
+                    form.title.data, form.title_type.data, form.release_date.data, form.image_url.data
+                )
+                if result.status:
+                    flash(f"Created movie record for {form.title.data}", "success")
+            except Exception as e:
+                flash(f"Error creating movie record: {e}", "danger")
     return render_template("movie_form.html", form=form, type="Create")
 
 #dj325 20/11/23 
