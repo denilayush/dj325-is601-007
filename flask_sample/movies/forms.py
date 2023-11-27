@@ -29,7 +29,7 @@ class movieFilterForm(FlaskForm):
     title_type = StringField('Movie Type', [Optional()])
     release_dateStart = DateField('Release Date Start',format='%Y-%m-%d')
     release_dateEnd = DateField('Release Date End',format='%Y-%m-%d', default=datetime.today())
-    sort = SelectField("Sort", [Optional()], choices=[('', 'Not Selected'), ("title", "Title"),("title_type","Type"),("release_date","Release Date")] , default="")
+    sort = SelectField("Sort", [Optional()], choices=[('', 'Not Selected'), ("title", "Title"),("title_type","Type"),("release_date","Release Date"),("created","Created")] , default="")
     order = SelectField("Order", [Optional()], choices=[("asc","Low to High"), ("desc","High to Low")])
     limit = IntegerField("Limit", [Optional(), NumberRange(min=1, max=100)], default=10)
     submit = SubmitField("Search")
