@@ -198,4 +198,7 @@ def delete():
         del args["id"]
     else:
         flash("No ID present", "warning")
-    return redirect(url_for("movies.list", **args))
+    # return redirect(url_for("movies.list", **args))
+    # updated this to get back to the same query
+    query_params = request.referrer
+    return redirect(query_params)
