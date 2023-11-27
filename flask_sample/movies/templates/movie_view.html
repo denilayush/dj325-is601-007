@@ -29,11 +29,21 @@
                 </div>
             </div>
         </div>
-        <a href="{{ url_for('movies.list') }}" class="btn btn-secondary">Back</a>
         <!-- <p>{{current_user.has_role("Admin")}}</p> -->
-        {% if current_user.has_role("Admin") %}
-        <a href="{{ url_for('movies.edit') }}?id={{movie_id}}" class="btn btn-warning">Edit</a>
-        {% endif %}
+        <div class="row">
+            <div class="col" >
+                {% if current_user.has_role("Admin") %}
+                <a href="{{ url_for('movies.edit') }}?id={{movie_id}}" class="btn btn-warning" style="width: 100%;">Edit</a>
+                {% endif %}
+            </div>
+            <div class="col" >
+                {% if current_user.has_role("Admin") %}
+                <a href="{{ url_for('movies.delete') }}?id={{movie_id}}" class="btn btn-danger" style="width: 100%;">Delete</a>
+                {% endif %}
+            </div>
+        </div>
+        <a href="{{ url_for('movies.list') }}" class="btn btn-secondary">Back</a>
+
     </div>
 </div>
 {% endblock %} 
