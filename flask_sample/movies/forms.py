@@ -25,8 +25,10 @@ class movieForm(FlaskForm):
 
 
 class movieFilterForm(FlaskForm):
-    title = StringField("Movie Name", [Optional()])
-    title_type = StringField('Movie Type', [Optional()])
+    title = StringField("Name", [Optional()])
+    title_type = SelectField('Type',[Optional()] ,choices=[('',"Select"),('Movie',"Movie"),("Music Video","Music Video"),("Podcast Episode","Podcast Episode"),("Podcast Series","Podcast Series"),("Short","Short")
+                                    ,("TV Episode","TV Episode"),("TV Mini Series","TV Mini Series"),("TV Movie","TV Movie"),("TV Pilot","TV Pilot"),("TV Series","TV Series"),("TV Short","TV Short"),("TV Special","TV Special")
+                                    ,("Video","Video"),("Video Game","Video Game")])
     release_dateStart = DateField('Release Date Start',format='%Y-%m-%d')
     release_dateEnd = DateField('Release Date End',format='%Y-%m-%d', default=datetime.today())
     sort = SelectField("Sort", [Optional()], choices=[('', 'Not Selected'), ("title", "Title"),("title_type","Type"),("release_date","Release Date")] , default="")
