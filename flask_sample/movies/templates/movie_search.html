@@ -2,17 +2,18 @@
 {% block title %}{{ type }} Role{% endblock %}
 {% block content %}
 {% from "_formhelpers.html" import render_field %}
+{% from "_formhelpersForEdit.html" import render_field_edit %}
 <!-- dj325 20/11/23 -->
 <div class="container-fluid">
     <div class="h3">Movie Search</div>
     <form method="POST">
         {% for field in form %}
         {% if field.name != 'csrf_token' %}
-        {{ render_field(field) }}
+        {{ render_field_edit(field) }}
         {% endif %}
         {% endfor %}
         {{ form.hidden_tag() }}
-        {{ form.submit(class="btn btn-primary") }}
+        {{ form.submit(class="btn w-100 btn-primary mt-2") }}
     </form>
 </div>
 {% endblock %}

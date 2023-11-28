@@ -1,5 +1,5 @@
 {% macro render_table(data, title=None, ignored=[], view=None, edit=None, delete=None, table_class="",current_user="") %}
-<div class="container-fluid" style="padding: 5px;">
+<div class="container-fluid mb-5" style="padding: 5px;">
     {% if title %}
     <div class="h1" style="text-align: center; padding: 1px; color: aliceblue; background: black; border-top-left-radius: 25px; border-top-right-radius: 25px;">{{ title }}</div>
     {% endif %}
@@ -52,8 +52,8 @@
             </tr>
             {% endfor %}
             {% if not data %}
-            <tr>
-                <td colspan="100%">No results</td>
+            <tr class="text-center table-warning">
+                <td colspan="100%" style="color: red;"><marquee behavior="alternate" direction="right">No results</marquee></td>
             </tr>
             {% endif %}
         </tbody>
