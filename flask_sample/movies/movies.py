@@ -146,6 +146,7 @@ def add():
                 flash(f"Error creating movie record: {e}", "danger")
     return render_template("movie_form.html", form=form, type="Create")
 
+
 #dj325 20/11/23 
 @movies.route("/edit", methods=["GET", "POST"])
 @admin_permission.require(http_exception=403)
@@ -178,6 +179,11 @@ def edit():
                     flash(f"Updated movie record for {form.title.data}", "success")
             except Exception as e:
                 flash(f"Error updating movie record: {e}", "danger")
+    #dj325 28/11/23 #error on submiting the edit form 
+    else:
+        print("Form Errors:", form.errors)
+        if len(form.errors) >0:
+            return render_template("movie_form.html", form=form, type="Edit")
     try:
         result = DB.selectOne(
             "SELECT id, api_id , title, title_type, release_date, image_url, created, modified FROM IS601_Movies WHERE id = %s",
