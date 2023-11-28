@@ -28,7 +28,7 @@ def fetch():
                     try:
                         # Formating the release date
                         release_date = f"{movie['releaseDate']['year']}-{movie['releaseDate']['month']}-{movie['releaseDate']['day']}"
-                        
+                        #dj325 20/11/23 
                         if movie['primaryImage'] is not None:  # Checking if primaryImage is not None
                             query = """
                                 INSERT INTO IS601_Movies (api_id, title, title_type, release_date, image_url)
@@ -124,9 +124,7 @@ def add():
     form = movieForm()
     if form.validate_on_submit():
         try:
-            print(form.title.data.lower(),
-            form.title_type.data.lower(),
-            form.release_date.data)
+            # print(form.title.data.lower(), form.title_type.data.lower(), form.release_date.data)
             query = f"SELECT title, title_type, release_date FROM IS601_Movies WHERE LOWER(title) = '{str(form.title.data.lower())}' AND LOWER(title_type) = '{str(form.title_type.data.lower())}' AND release_date = '{str(form.release_date.data)}'"
             print(query)
             result = DB.selectAll(query, {}
@@ -148,26 +146,44 @@ def add():
                 flash(f"Error creating movie record: {e}", "danger")
     return render_template("movie_form.html", form=form, type="Create")
 
+
 #dj325 20/11/23 
 @movies.route("/edit", methods=["GET", "POST"])
 @admin_permission.require(http_exception=403)
 def edit():
     form = movieForm()
     id = request.args.get("id")
+    print(form.image_url.errors)
     if id is None:
         flash("Missing ID", "danger")
         return redirect(url_for("movies.list"))
     if form.validate_on_submit() and id:
         try:
-            # Update the existing movie record in the database
-            result = DB.insertOne(
-                "UPDATE IS601_Movies SET title = %s, title_type = %s, release_date = %s, image_url = %s WHERE id = %s",
-                form.title.data, form.title_type.data, form.release_date.data, form.image_url.data, id
+            # print(form.title.data.lower(), form.title_type.data.lower(), form.release_date.data)
+            query = f"SELECT title, title_type, release_date, image_url FROM IS601_Movies WHERE LOWER(title) = '{str(form.title.data.lower())}' AND LOWER(title_type) = '{str(form.title_type.data.lower())}' AND release_date = '{str(form.release_date.data)}' AND image_url = '{str(form.image_url.data)}'"
+            print(query)
+            result = DB.selectAll(query, {}
             )
-            if result.status:
-                flash(f"Updated movie record for {form.title.data}", "success")
+            # print(result)
+            if result.status and result.rows[0]:
+                flash("Already Available","warning")
         except Exception as e:
-            flash(f"Error updating movie record: {e}", "danger")
+            print(e)
+            try:
+                # Update the existing movie record in the database
+                result = DB.insertOne(
+                    "UPDATE IS601_Movies SET title = %s, title_type = %s, release_date = %s, image_url = %s WHERE id = %s",
+                    form.title.data, form.title_type.data, form.release_date.data, form.image_url.data, id
+                )
+                if result.status:
+                    flash(f"Updated movie record for {form.title.data}", "success")
+            except Exception as e:
+                flash(f"Error updating movie record: {e}", "danger")
+    #dj325 28/11/23 #error on submiting the edit form 
+    else:
+        print("Form Errors:", form.errors)
+        if len(form.errors) >0:
+            return render_template("movie_form.html", form=form, type="Edit")
     try:
         result = DB.selectOne(
             "SELECT id, api_id , title, title_type, release_date, image_url, created, modified FROM IS601_Movies WHERE id = %s",
@@ -177,6 +193,7 @@ def edit():
             form = movieForm(data=result.row)
     except Exception as e:
         flash("Error fetching movie record", "danger")
+    print(form.image_url.errors)
     return render_template("movie_form.html", form=form, type="Edit")
 
 
