@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block title %}{{ type }} Role{% endblock %}
+{% block content %}
+{% from "_formhelpersForEdit.html" import render_field_edit %}
+{% from "_formhelpers.html" import render_field %}
+<!-- dj325 20/11/23 -->
+<div class="container-fluid">
+    <div class="h3" style="text-align: center; padding: 1px; color: aliceblue; background: black; border-top-left-radius: 25px; border-top-right-radius: 25px;">{{ type }} Movie Data</div>
+    <form method="POST">
+        {% for field in form %}
+        {% if field.name != 'csrf_token' %}
+        {{ render_field_edit(field) }}
+        {% endif %}
+        {% endfor %}
+        {{ form.hidden_tag() }}
+        {{ form.submit(class="btn btn-success custom-btn-block mb-2 mt-2") }}
+    </form>
+    <a href="{{ url_for('movies.list') }}" class="btn btn-secondary custom-btn-block">Back</a>
+</div>
+
+<style>
+    /* Custom styles to force buttons to take full width */
+    .custom-btn-block {
+        width: 100%;
+        display: block;
+    }
+</style>
+
+{% endblock %}
