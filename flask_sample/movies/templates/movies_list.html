@@ -9,6 +9,9 @@
 {% set view = "movies.view" %}
 {% set edit = "movies.edit" %}
 {% set delete = "movies.delete" %}
+<!-- added this to add movies in Watch Later -->
+{% set associate = "movies.associate" %}
+
 <div class="container-fluid">
 
     <form method="GET">
@@ -27,6 +30,6 @@
         </div>
     </form>
 
-    {{ render_table(rows, "Movies", ["id", "api_id"], view, edit, delete,"table-striped table-bordered table-hover",current_user) }}
+    {{ render_table(rows, "Movies", ["id", "api_id"], view, edit, delete, associate,"table-striped table-bordered table-hover",current_user) }}
 </div>
 {% endblock %}

@@ -1,4 +1,4 @@
-{% macro render_table(data, title=None, ignored=[], view=None, edit=None, delete=None, table_class="",current_user="") %}
+{% macro render_table(data, title=None, ignored=[], view=None, edit=None, delete=None, associate=None,table_class="",current_user="") %}
 <div class="container-fluid mb-5" style="padding: 5px;">
     {% if title %}
     <div class="h1" style="text-align: center; padding: 1px; color: aliceblue; background: black; border-top-left-radius: 25px; border-top-right-radius: 25px;">{{ title }}</div>
@@ -13,7 +13,7 @@
                 <th>{{ r.replace("_"," ") }}</th>
                 {% endif %}
                 {% endfor %}
-                {% if view or edit or delete %}
+                {% if view or edit or delete or associate %}
                 <th>Actions</th>
                 {% endif %}
             </tr>
@@ -46,6 +46,9 @@
                     {% endif %}
                     {% if delete and r["id"] and current_user.has_role("Admin")%}
                     <a href="{{ url_for(delete) }}?id={{ r['id'] }}" class="btn btn-danger btn-sm">Delete</a>
+                    {% endif %}
+                    {% if associate and r["id"] and not current_user.has_role("Admin") %}
+                    <a href="{{ url_for(associate) }}?id={{ r['id'] }}" class="btn btn-outline-primary btn-sm">Add to Watch Later</a>
                     {% endif %}
                 </td>
                 {% endif %}
