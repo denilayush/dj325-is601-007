@@ -287,12 +287,15 @@ def watch():
         print(result.status)
         if result.status and result.rows:
             rows = result.rows
+            movies_count = " - "+str(len(rows))+" movies in the list"
             print(rows)
+        else:
+            movies_count="- No movies to display"
     except Exception as e:
         print(e)
         flash("Error getting movie records", "danger")
     #print(rows[0])
-    return render_template("watch_list.html", rows=rows, current_user=current_user)
+    return render_template("watch_list.html", rows=rows, current_user=current_user,movies_count=movies_count )
 
 #dj325 28/11/23 page for assiciation of a movie to a user
 @movies.route("/associate", methods=["GET"])
@@ -321,6 +324,8 @@ def associate():
         flash("No ID present for Association", "warning")
     # return redirect(url_for("movies.list", **args))
     # updated this to get back to the same query
-    if page:
+    if "view" in page:
         return redirect(url_for("movies.view",**args))
+    if page == "watch":
+        return redirect(url_for("movies.watch",**args))
     return redirect(url_for("movies.list"))
