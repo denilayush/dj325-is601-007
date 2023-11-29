@@ -43,7 +43,7 @@
             </div>
         </div>
         {% if not association and not current_user.has_role("Admin") %}
-                <a href="{{ url_for('movies.associate') }}?id={{movie_id}}&page=view_add" class="btn btn-outline-primary" style="width: 100%;">Add to WatchLater</a>
+                <a href="{{ url_for('movies.associate') }}?id={{movie_id}}&page=view_add" class="btn btn-primary" style="width: 100%;">Add to WatchLater</a>
         {% endif %}
         {% if association and not current_user.has_role("Admin") %}
                 <a href="{{ url_for('movies.associate') }}?id={{movie_id}}&page=view_remove" class="btn btn-danger" style="width: 100%;">Remove From WatchLater</a>
