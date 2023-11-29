@@ -5,9 +5,11 @@
 {% block content %}
 {% from "_formhelpers.html" import render_field %}
 {% from "_table_helper.html" import render_table %}
+<!-- dj325 29/11/23 -->
 {% set associate = "movies.associate" %}
+{% set view = "movies.view" %}
 
 <div class="container-fluid">
-    {{ render_table(rows, "Watch Later", ["id","api_id"], None, None, associate,associate,"table-striped table-bordered table-hover",current_user) }}
+    {{ render_table(rows, "Watch Later "+ movies_count, ["id","api_id"], view, None, None,associate,"table-striped table-bordered table-hover",current_user) }}
 </div>
 {% endblock %}
