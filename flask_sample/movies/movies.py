@@ -310,7 +310,7 @@ def associate():
             if result.status:
                 if page == "view_add":
                     flash("Movie Added to Watch Later", "success")
-                if page == "view_edit":
+                elif page == "view_remove":
                     flash("Movie Removed From Watch Later", "success")
         except Exception as e:
             # if "Duplicate entry" in str(e):
