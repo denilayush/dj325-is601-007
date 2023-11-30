@@ -42,7 +42,17 @@
                 {% endif %}
             </div>
         </div>
-        <a href="{{ url_for('movies.list') }}" class="btn btn-secondary">Back</a>
+        {% if not association and not current_user.has_role("Admin") %}
+                <a href="{{ url_for('movies.associate') }}?id={{movie_id}}&page=view_add" class="btn btn-primary" style="width: 100%;">Add to WatchLater</a>
+        {% endif %}
+        {% if association and not current_user.has_role("Admin") %}
+                <a href="{{ url_for('movies.associate') }}?id={{movie_id}}&page=view_remove" class="btn btn-danger" style="width: 100%;">Remove From WatchLater</a>
+        {% endif %}
+        {% if  page == "watch"  %}
+            <a href="{{ url_for('movies.watch') }}" class="btn btn-secondary">Back</a>
+        {% elif page == "list" %}
+            <a href="{{ url_for('movies.list') }}" class="btn btn-secondary">Back</a>
+        {% endif %}
 
     </div>
 </div>
