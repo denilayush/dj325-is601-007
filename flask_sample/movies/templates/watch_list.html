@@ -5,15 +5,11 @@
 {% block content %}
 {% from "_formhelpers.html" import render_field %}
 {% from "_table_helper.html" import render_table %}
-
+<!-- dj325 29/11/23 -->
+{% set associate = "movies.associate" %}
 {% set view = "movies.view" %}
-{% set edit = "movies.edit" %}
-{% set delete = "movies.delete" %}
-<!-- added this to add movies in Watch Later -->
-<!-- {#set associate = "movies.associate" #} -->
 
 <div class="container-fluid">
-
     <form method="GET">
         <div class="row " style="align-items: end;">
             {% for field in form %}
@@ -30,6 +26,6 @@
         </div>
     </form>
 
-    {{ render_table(rows, "Movies", ["id", "api_id"], view, edit, delete, associate,"table-striped table-bordered table-hover",current_user,page) }}
+    {{ render_table(rows, "Watch Later "+ movies_count, ["id","api_id"], view, None, None,associate,"table-striped table-bordered table-hover",current_user,page) }}
 </div>
 {% endblock %}
