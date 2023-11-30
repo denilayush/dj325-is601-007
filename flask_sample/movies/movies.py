@@ -115,7 +115,7 @@ def list():
         print(e)
         flash("Error getting movie records", "danger")
     #print(rows[0])
-    return render_template("movies_list.html", rows=rows, form=searchForm,current_user=current_user)
+    return render_template("movies_list.html", rows=rows, form=searchForm,current_user=current_user,page="list")
 
 #dj325 20/11/23 
 @movies.route("/add", methods=["GET", "POST"])
@@ -218,6 +218,7 @@ def check_association(user_id,id):
 @movies.route("/view", methods=["GET"])
 def view():
     id = request.args.get("id")
+    page = request.args.get("page")
     user_id = current_user.get_id()
     print("Movie id: ",id," User Id: ",user_id)
     if id is None:
@@ -233,7 +234,7 @@ def view():
             #user association Check 
             # dj325 28-11-23
             association = check_association(user_id,id)
-            return render_template("movie_view.html", movie=result.row,current_user=current_user, movie_id = id, association = association)
+            return render_template("movie_view.html", movie=result.row,current_user=current_user, movie_id = id, association = association,page=page)
         else:
             flash("Movie record not found", "danger")
     except Exception as e:
@@ -272,6 +273,7 @@ def delete():
 def watch():
     args = {}
     rows = []
+    searchForm = movieFilterForm(request.args)
     user_id = current_user.get_id()
     query = """ SELECT m.id, m.api_id, m.title, m.title_type, m.release_date, m.image_url
             FROM 
@@ -279,8 +281,40 @@ def watch():
             JOIN 
                 IS601_Movies AS m ON ua.movie_id = m.id
             WHERE 
-                ua.user_id = %(user_id)s AND ua.is_active = 1;"""
+                ua.user_id = %(user_id)s AND ua.is_active = 1"""
     args["user_id"] = f"{user_id}"
+
+    if searchForm.title.data:
+        query += " AND m.title LIKE %(title)s"
+        args["title"] = f"%{searchForm.title.data}%"
+
+    if searchForm.title_type.data:
+        query += " AND m.title_type LIKE %(title_type)s"
+        args["title_type"] = f"{searchForm.title_type.data}"
+    
+    if searchForm.release_dateStart.data and searchForm.release_dateEnd.data :
+        query += " AND m.release_date >= %(release_dateStart)s AND m.release_date <= %(release_dateEnd)s"
+        args["release_dateStart"] = f"{searchForm.release_dateStart.data}"
+        args["release_dateEnd"] = f"{searchForm.release_dateEnd.data}"
+    
+    # dj325 27/11/23
+    if searchForm.sort.data and searchForm.order.data:
+        query += f" ORDER BY {searchForm.sort.data} {searchForm.order.data}"
+    
+    if searchForm.limit.data:
+        if searchForm.limit.data >100 or searchForm.limit.data<1:
+            searchForm.limit.data = 10
+            query += f" LIMIT 10"
+        else:
+            query += f" LIMIT {searchForm.limit.data}"
+    else:
+        query += f" LIMIT 10"
+
+    if searchForm.validate_on_submit():
+        pass
+    else:
+        print(searchForm.errors)
+
     print(query,args)
     try:
         result = DB.selectAll(query, args)
@@ -295,7 +329,7 @@ def watch():
         print(e)
         flash("Error getting movie records", "danger")
     #print(rows[0])
-    return render_template("watch_list.html", rows=rows, current_user=current_user,movies_count=movies_count )
+    return render_template("watch_list.html", rows=rows, current_user=current_user,movies_count=movies_count,form=searchForm, page="watch")
 
 #dj325 28/11/23 page for assiciation of a movie to a user
 @movies.route("/associate", methods=["GET"])
@@ -328,4 +362,5 @@ def associate():
         return redirect(url_for("movies.view",**args))
     if page == "watch":
         return redirect(url_for("movies.watch",**args))
-    return redirect(url_for("movies.list"))
+    query_params = request.referrer
+    return redirect(url_for("query_params"))
