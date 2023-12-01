@@ -8,6 +8,7 @@
 <!-- dj325 29/11/23 -->
 {% set associate = "movies.associate" %}
 {% set view = "movies.view" %}
+{% set remove = "movies.remove" %}
 
 <div class="container-fluid">
     <form method="GET">
@@ -26,6 +27,6 @@
         </div>
     </form>
 
-    {{ render_table(rows, "Watch Later "+ movies_count, ["id","api_id"], view, None, None,associate,"table-striped table-bordered table-hover",current_user,page) }}
+    {{ render_table(rows, "Watch Later "+ movies_count, ["id","api_id"], view, None, None,associate,remove,"table-striped table-bordered table-hover",current_user,page) }}
 </div>
 {% endblock %}
