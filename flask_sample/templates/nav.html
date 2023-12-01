@@ -41,14 +41,16 @@
                 <!-- movies nav (requires admin )-->
                 {% if current_user.has_role("Admin") %}
                 {% set movies = [
-                ("movies.fetch", "fetch"),
-                ("movies.add", "add"),
-                ("movies.list", "list")
+                ("movies.fetch", "Fetch"),
+                ("movies.add", "Add"),
+                ("movies.list", "List"),
+                ("movies.associations", "Associations")
                 ] %}
                 {{dropdown_nav("Movies", movies)}}
                 {% else %}
                 {% set movies = [
-                ("movies.list", "list")
+                ("movies.list", "List"),
+                ("movies.watch", "Watch-List")
                 ] %}
                 {{dropdown_nav("Movies",movies)}}
                 {% endif %}

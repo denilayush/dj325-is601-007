@@ -52,6 +52,8 @@
             <a href="{{ url_for('movies.watch') }}" class="btn btn-secondary">Back</a>
         {% elif page == "list" %}
             <a href="{{ url_for('movies.list') }}" class="btn btn-secondary">Back</a>
+        {% elif page == "associations" %}
+            <a href="{{ url_for('movies.associations') }}" class="btn btn-secondary">Back</a>
         {% else %}
             <a href="{{ url_for('movies.list') }}" class="btn btn-secondary">Back</a>
         {% endif %}

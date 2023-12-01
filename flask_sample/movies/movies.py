@@ -386,3 +386,38 @@ def remove():
     # updated this to get back to the same query
     query_params = request.referrer
     return redirect(url_for("movies.watch"))
+
+
+
+# dj325 30/11/23
+#all users association page.
+@movies.route("/associations", methods=["GET", "POST"])
+@admin_permission.require(http_exception=403)
+def associations():
+    # searchForm = movieFilterForm(request.args)
+    query = """SELECT m.id AS movie_id, u.id AS user_id , m.title AS watch_list_movies, m.image_url, u.username AS user_name, user_counts.total_count
+    FROM IS601_Movies m
+    LEFT JOIN IS601_UsersAssociation ua ON m.id = ua.movie_id AND ua.is_active = 1
+    LEFT JOIN IS601_Users u ON ua.user_id = u.id
+    LEFT JOIN (
+        SELECT movie_id, COUNT(user_id) AS total_count
+        FROM IS601_UsersAssociation
+        WHERE is_active = 1
+        GROUP BY movie_id
+    ) AS user_counts ON m.id = user_counts.movie_id
+    WHERE ua.user_id IS NOT NULL
+    GROUP BY m.id, m.title, m.image_url, u.username, user_counts.total_count
+    """
+    args = {}
+    rows = []
+    print(query,args)
+    try:
+        result = DB.selectAll(query, args)
+        if result.status and result.rows:
+            rows = result.rows
+            print("debug", rows)
+    except Exception as e:
+        print(e)
+        flash("Error getting movie records", "danger")
+    #print(rows[0])
+    return render_template("associations.html", rows=rows,page="list")
