@@ -47,6 +47,8 @@
                     <a href="{{ url_for(view) }}?id={{ r['id'] }}&page=watch" class="btn btn-outline-secondary btn-sm">View</a>
                     {% elif view and r["id"] and page =="list" %}
                     <a href="{{ url_for(view) }}?id={{ r['id'] }}&page=list" class="btn btn-outline-secondary btn-sm">View</a>
+                    {% elif view and r["id"] and page =="notassociated" %}
+                    <a href="{{ url_for(view) }}?id={{ r['id'] }}&page=notassociated" class="btn btn-outline-secondary btn-sm">View</a>
                     {% endif %}
                     {% if edit and r["id"] and current_user.has_role("Admin") %}
                     <a href="{{ url_for(edit) }}?id={{ r['id'] }}" class="btn btn-secondary btn-sm">Edit</a>
