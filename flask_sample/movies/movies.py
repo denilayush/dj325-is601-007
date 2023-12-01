@@ -409,7 +409,7 @@ def associations():
     """
     args = {}
     rows = []
-
+    # dj325 01/12/23
     if searchForm.title.data:
         query += " AND m.title LIKE %(title)s"
         args["title"] = f"%{searchForm.title.data}%"
@@ -418,6 +418,7 @@ def associations():
         args["user_name"] = f"%{searchForm.user_name.data}%"
 
     query += " GROUP BY m.id, m.title, m.image_url, u.username, user_counts.total_count"
+    
     print(query,args)
     try:
         result = DB.selectAll(query, args)
@@ -427,13 +428,17 @@ def associations():
     except Exception as e:
         print(e)
         flash("Error getting movie records", "danger")
+    if searchForm.limit.data:
+        limit = searchForm.limit.data
+    else:
+        limit = 10
     #print(rows[0])
-    return render_template("associations_list.html", rows=rows,page="list",associations_count = str(len(rows)), form=searchForm)
+    return render_template("associations_list.html", rows=rows[:limit],page="list",associations_count = str(len(rows)), form=searchForm)
 
 
-#dj325 28/11/23 page for assiciation of a movie to a user
+#dj325 01/12/23 page for assiciation of a movie to a user
 @movies.route("/dissociate", methods=["GET"])
-# @admin_permission.require(http_exception=403)
+@admin_permission.require(http_exception=403)
 def dissociate():
     id = request.args.get("id")
     page = request.args.get("page")
