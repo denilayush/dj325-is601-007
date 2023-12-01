@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, render_template, request, redirect, url_for
 from sql.db import DB  # Import your DB class
-from movies.forms import movieForm, movieSearchForm, movieFilterForm  # Import your movieForm class
+from movies.forms import movieForm, movieSearchForm, movieFilterForm, associationsFilterForm # Import movieForm class
 from roles.permissions import admin_permission
 from flask_login import login_user, login_required, logout_user, current_user
 
@@ -394,7 +394,7 @@ def remove():
 @movies.route("/associations", methods=["GET", "POST"])
 @admin_permission.require(http_exception=403)
 def associations():
-    # searchForm = movieFilterForm(request.args)
+    searchForm = associationsFilterForm(request.args)
     query = """SELECT m.id AS movie_id, u.id AS user_id , m.title AS watch_list_movies, m.image_url, u.username AS user_name, user_counts.total_count
     FROM IS601_Movies m
     LEFT JOIN IS601_UsersAssociation ua ON m.id = ua.movie_id AND ua.is_active = 1
@@ -406,10 +406,18 @@ def associations():
         GROUP BY movie_id
     ) AS user_counts ON m.id = user_counts.movie_id
     WHERE ua.user_id IS NOT NULL
-    GROUP BY m.id, m.title, m.image_url, u.username, user_counts.total_count
     """
     args = {}
     rows = []
+
+    if searchForm.title.data:
+        query += " AND m.title LIKE %(title)s"
+        args["title"] = f"%{searchForm.title.data}%"
+    if searchForm.user_name.data:
+        query += " AND u.username LIKE %(user_name)s"
+        args["user_name"] = f"%{searchForm.user_name.data}%"
+
+    query += " GROUP BY m.id, m.title, m.image_url, u.username, user_counts.total_count"
     print(query,args)
     try:
         result = DB.selectAll(query, args)
@@ -420,7 +428,7 @@ def associations():
         print(e)
         flash("Error getting movie records", "danger")
     #print(rows[0])
-    return render_template("associations_list.html", rows=rows,page="list")
+    return render_template("associations_list.html", rows=rows,page="list",associations_count = str(len(rows)), form=searchForm)
 
 
 #dj325 28/11/23 page for assiciation of a movie to a user
