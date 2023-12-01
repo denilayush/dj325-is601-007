@@ -420,4 +420,31 @@ def associations():
         print(e)
         flash("Error getting movie records", "danger")
     #print(rows[0])
-    return render_template("associations.html", rows=rows,page="list")
+    return render_template("associations_list.html", rows=rows,page="list")
+
+
+#dj325 28/11/23 page for assiciation of a movie to a user
+@movies.route("/dissociate", methods=["GET"])
+# @admin_permission.require(http_exception=403)
+def dissociate():
+    id = request.args.get("id")
+    page = request.args.get("page")
+    args = {**request.args}
+    user_id = request.args.get("user_id")
+    if id:
+        try:
+            # Delete the movie record from the database
+            result = DB.insertOne("INSERT INTO IS601_UsersAssociation (movie_id, user_id) VALUES (%s, %s) ON DUPLICATE KEY UPDATE is_active = !is_active", id,user_id)
+            print(result.status)
+            if result.status:
+                flash("Successfully removed movie from user's watchlist","success")
+        except Exception as e:
+            # if "Duplicate entry" in str(e):
+            #     flash("Already Added to watch later","success")
+            # else:
+            flash(f"Error Adding to Watch Later: {e}", "danger")
+    else:
+        flash("No ID present for Association", "warning")
+    # return redirect(url_for("movies.list", **args))
+    # updated this to get back to the same query
+    return redirect(url_for("movies.associations"))
