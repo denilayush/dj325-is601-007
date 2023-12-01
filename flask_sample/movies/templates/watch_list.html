@@ -26,7 +26,7 @@
             </div>
         </div>
     </form>
-
+    
     {{ render_table(rows, "Watch Later "+ movies_count, ["id","api_id"], view, None, None,associate,remove,"table-striped table-bordered table-hover",current_user,page) }}
 </div>
 {% endblock %}
