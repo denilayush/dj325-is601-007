@@ -35,3 +35,8 @@ class movieFilterForm(FlaskForm):
     order = SelectField("Order", [Optional()], choices=[("asc","Low to High"), ("desc","High to Low")])
     limit = IntegerField("Limit", [Optional(), NumberRange(min=1, max=100)], default=10)
     submit = SubmitField("Search")
+
+class associationsFilterForm(FlaskForm):
+    title = StringField("Title", [Optional()])
+    user_name = StringField("User Name", [Optional()])
+    submit = SubmitField("Search")
