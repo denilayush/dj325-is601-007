@@ -230,7 +230,7 @@ def view():
             id
         )
         
-        if result.status and result.row:
+        if result.status and result.row :
             #user association Check 
             # dj325 28-11-23
             association = check_association(user_id,id)
@@ -240,6 +240,9 @@ def view():
     except Exception as e:
         print(f"Movie error {e}")
         flash("Error fetching Movie record", "danger")
+    if page == "notassociated":
+        return redirect(url_for("movies.notassociated"))
+    
     
     return redirect(url_for("movies.list"))
 
@@ -461,3 +464,57 @@ def dissociate():
     # return redirect(url_for("movies.list", **args))
     # updated this to get back to the same query
     return redirect(url_for("movies.associations"))
+
+
+# dj325 01/12/23
+# page for movie that is not associated with any users.
+@movies.route("/notassociated", methods=["GET", "POST"])
+@admin_permission.require(http_exception=403)
+def notassociated():
+    searchForm = movieFilterForm(request.args)
+    query = """SELECT m.id, m.title AS movie_title, title_type, release_date, image_url
+FROM IS601_Movies m
+LEFT JOIN IS601_UsersAssociation ua ON m.id = ua.movie_id
+WHERE ua.movie_id IS NULL 
+    """
+    args = {}
+    rows = []
+    # dj325 01/12/23
+    if searchForm.title.data:
+        query += " AND m.title LIKE %(title)s"
+        args["title"] = f"%{searchForm.title.data}%"
+
+    if searchForm.title_type.data:
+        query += " AND m.title_type LIKE %(title_type)s"
+        args["title_type"] = f"{searchForm.title_type.data}"
+    
+    if searchForm.release_dateStart.data and searchForm.release_dateEnd.data :
+        query += " AND m.release_date >= %(release_dateStart)s AND m.release_date <= %(release_dateEnd)s"
+        args["release_dateStart"] = f"{searchForm.release_dateStart.data}"
+        args["release_dateEnd"] = f"{searchForm.release_dateEnd.data}"
+    
+    # dj325 27/11/23
+    if searchForm.sort.data and searchForm.order.data:
+        query += f" ORDER BY {searchForm.sort.data} {searchForm.order.data}"
+    
+
+    if searchForm.validate_on_submit():
+        pass
+    else:
+        print(searchForm.errors)
+    
+    print(query,args)
+    try:
+        result = DB.selectAll(query, args)
+        if result.status and result.rows:
+            rows = result.rows
+            print("debug", rows)
+    except Exception as e:
+        print(e)
+        flash("Error getting movie records", "danger")
+    if searchForm.limit.data:
+        limit = searchForm.limit.data
+    else:
+        limit = 10
+    #print(rows[0])
+    return render_template("not_associated_list.html", rows=rows[:limit],page="notassociated",not_associations_count = str(len(rows)), form=searchForm)
