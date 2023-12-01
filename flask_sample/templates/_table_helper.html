@@ -1,7 +1,12 @@
-{% macro render_table(data, title=None, ignored=[], view=None, edit=None, delete=None, associate=None, table_class="",current_user="",page=None) %}
+{% macro render_table(data, title=None, ignored=[], view=None, edit=None, delete=None, associate=None,remove=None , table_class="",current_user="",page=None) %}
 <div class="container-fluid mb-5" style="padding: 5px;">
     {% if title %}
-    <div class="h1" style="text-align: center; padding: 1px; color: aliceblue; background: black; border-top-left-radius: 25px; border-top-right-radius: 25px;">{{ title }}</div>
+    <div class="h1" style="text-align: center; padding: 1px; color: aliceblue; background: black; border-top-left-radius: 25px; border-top-right-radius: 25px;">{{ title }} 
+        {% if "Watch" in title and data and data|length > 1 %}
+            <a href="{{url_for(remove)}}" class="btn btn-danger btn-sm">Remove All from Watch List</a>
+        {% else %}
+        {% endif %}
+    </div>
     {% endif %}
     <table class="table {{ table_class }}">
         <thead>

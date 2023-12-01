@@ -273,6 +273,7 @@ def delete():
 def watch():
     args = {}
     rows = []
+    #dj325 30/11/23 Added search filters
     searchForm = movieFilterForm(request.args)
     user_id = current_user.get_id()
     query = """ SELECT m.id, m.api_id, m.title, m.title_type, m.release_date, m.image_url
@@ -364,3 +365,24 @@ def associate():
         return redirect(url_for("movies.watch",**args))
     query_params = request.referrer
     return redirect(url_for("query_params"))
+
+#dj325 30/11/23 remove all watch list items
+@movies.route("/remove", methods=["GET"])
+# @admin_permission.require(http_exception=403)
+def remove():
+    user_id = current_user.get_id()
+    args = {**request.args}
+    if id:
+        try:
+            # Update the all is_active columns from 1 to 0
+            result = DB.update("UPDATE IS601_UsersAssociation SET is_active = 0 WHERE user_id = %s;",user_id)
+            if result.status:
+                flash("Removed all the movies from Watch List", "success")
+        except Exception as e:
+            flash(f"Error deleting movie record: {e}", "danger")
+    else:
+        flash("Something went wrong", "warning")
+    # return redirect(url_for("movies.list", **args))
+    # updated this to get back to the same query
+    query_params = request.referrer
+    return redirect(url_for("movies.watch"))
