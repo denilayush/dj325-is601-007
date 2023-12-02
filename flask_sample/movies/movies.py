@@ -305,14 +305,15 @@ def watch():
     if searchForm.sort.data and searchForm.order.data:
         query += f" ORDER BY {searchForm.sort.data} {searchForm.order.data}"
     
-    if searchForm.limit.data:
-        if searchForm.limit.data >100 or searchForm.limit.data<1:
-            searchForm.limit.data = 10
-            query += f" LIMIT 10"
-        else:
-            query += f" LIMIT {searchForm.limit.data}"
-    else:
-        query += f" LIMIT 10"
+    # removing this because I will use a limit in rows
+    # if searchForm.limit.data:
+    #     if searchForm.limit.data >100 or searchForm.limit.data<1:
+    #         searchForm.limit.data = 10
+    #         query += f" LIMIT 10"
+    #     else:
+    #         query += f" LIMIT {searchForm.limit.data}"
+    # else:
+    #     query += f" LIMIT 10"
 
     if searchForm.validate_on_submit():
         pass
@@ -333,7 +334,11 @@ def watch():
         print(e)
         flash("Error getting movie records", "danger")
     #print(rows[0])
-    return render_template("watch_list.html", rows=rows, current_user=current_user,movies_count=movies_count,form=searchForm, page="watch")
+    if searchForm.limit.data:
+        limit = searchForm.limit.data
+    else:
+        limit = 10
+    return render_template("watch_list.html", rows=rows[:limit], current_user=current_user,movies_count=movies_count,form=searchForm, page="watch")
 
 #dj325 28/11/23 page for assiciation of a movie to a user
 @movies.route("/associate", methods=["GET"])
@@ -493,7 +498,7 @@ WHERE ua.movie_id IS NULL
         args["release_dateStart"] = f"{searchForm.release_dateStart.data}"
         args["release_dateEnd"] = f"{searchForm.release_dateEnd.data}"
     
-    # dj325 27/11/23
+    # dj325 01/12/23
     if searchForm.sort.data and searchForm.order.data:
         query += f" ORDER BY {searchForm.sort.data} {searchForm.order.data}"
     
@@ -518,3 +523,73 @@ WHERE ua.movie_id IS NULL
         limit = 10
     #print(rows[0])
     return render_template("not_associated_list.html", rows=rows[:limit],page="notassociated",not_associations_count = str(len(rows)), form=searchForm)
+
+
+
+# dj325 01/12/23
+# assign page for admin to associate movies with users
+
+@movies.route("/assign", methods=["GET", "POST"])
+@admin_permission.require(http_exception=403)
+def assign():
+    users = []
+    movies = []
+
+    username = request.args.get("username")
+    title = request.args.get("title")
+    if username:
+        try:
+            result = DB.selectAll("""
+            SELECT id, username, 
+                (SELECT GROUP_CONCAT( title, ' (' , IF(ua.is_active = 1,'active','inactive') , ')') from 
+                IS601_UsersAssociation ua JOIN IS601_Movies on ua.movie_id = IS601_Movies.id WHERE ua.user_id = IS601_Users.id) as watchlist
+            FROM IS601_Users where username like %s limit 25
+            
+            """, f"%{username}%")
+            if result.status and result.rows:
+                users = result.rows
+        except Exception as e:
+            flash(str(e), "danger")
+    if title:
+        try:
+            query = "SELECT id, title FROM IS601_Movies WHERE 1 = 1"
+            if title:
+                query+=f" AND title LIKE '%{title}%'"
+            query+= " LIMIT 25"
+            print(query)
+            result = DB.selectAll(query,)
+            if result.status and result.rows:
+                movies = result.rows
+        except Exception as e:
+            flash(str(e),"danger")
+    return render_template("movies_assign.html", users=users, movies=movies)
+
+@movies.route("/apply", methods=["POST"])
+@admin_permission.require(http_exception=403)
+def apply():
+    # https://stackoverflow.com/a/24808706
+    users = request.form.getlist("users[]")
+    movies = request.form.getlist("movies[]")
+    print(users, movies)
+    args = {**request.args}
+    if users and movies: # we need both for this to work
+        mappings = []
+        for user in users:
+            for movie in movies:
+                print(user, movie)
+                mappings.append((int(user), int(movie)))
+        if len(mappings) > 0:
+            try:
+                result = DB.insertMany("INSERT INTO IS601_UsersAssociation (user_id, movie_id, is_active) VALUES(%s, %s, 1) ON DUPLICATE KEY UPDATE is_active = !is_active", mappings)
+                if result.status:
+                    flash(f"Successfully Added/Removed movies for the user/movies {len(mappings)} mappings", "success")
+            except Exception as e:
+                flash(str(e), "danger")
+        else:
+            flash("No user/movie mappings", "danger")
+
+    if "users" in args:
+        del args["users"]
+    if "movies" in args:
+        del args["movies"]
+    return redirect(url_for("movies.assign", **args))

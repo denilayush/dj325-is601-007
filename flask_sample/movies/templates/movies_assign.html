@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+{% block title %}Assign Movies{% endblock %}
+{% block content %}
+<!-- dj325 1/12/23 -->
+<div class="container-fluid">
+    <div class="h1">Assign Movies</div>
+    <form method="GET">
+        <input type="text" placeholder="Partial Username"
+            value="{{request.args.get('username', '')}}" name="username" />
+        <input type="text" placeholder="Movie Title"
+            value="{{request.args.get('title', '')}}" name="title" />
+        <input type="submit" class="btn btn-secondary" value="Search" />
+    </form>
+    <form id="apply" method="POST"
+        action="{{url_for('movies.apply')}}?username={{request.args.get('username', '')}}&title={{request.args.get('title', '')}}">
+        <!-- will map elements via form attribute on the element itself by form id -->
+        <input type="submit" class="btn btn-primary" value="Add Movies" />
+    </form>
+    <table class="table table-bordered mb-5">
+        <thead class="table-dark">
+            <tr>
+                <td>Users</td>
+                <td>Movie</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <!-- users -->
+                    <table class="table table-striped table-bordered table-hover">
+                        {% set rows = users %}
+                        {% if rows and rows|length > 0 %}
+                        <thead>
+                            <tr class="text-capitalize">
+                                {% for r in rows[0] %}
+                                <th>{{r}}</th>
+                                {% endfor %}
+                                <th>Select</th>
+                            </tr>
+                        </thead>
+                        {% for r in rows %}
+                        <tr>
+                            {% for v in r.values() %}
+                            <td>{{v}}</td>
+                            {% endfor %}
+                            <td>
+                                <input form="apply" type="checkbox" class="form-check"
+                                    name="users[]" value="{{r.get('id')}}" />
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <p>No results to show</p>
+                        {% endif %}
+                    </table>
+                    <!-- end users -->
+                </td>
+                <td>
+                    <!-- Movies -->
+                    <table class="table table-striped table-bordered table-hover">
+                        {% set rows = movies %}
+                        {% if rows and rows|length > 0 %}
+                        <thead>
+                            <tr class="text-capitalize">
+                                {% for r in rows[0] %}
+                                <th>{{r}}</th>
+                                {% endfor %}
+                                <th>Select</th>
+                            </tr>
+                        </thead>
+                        {% for r in rows %}
+                        <tr>
+                            {% for v in r.values() %}
+                            <td>{{v}}</td>
+                            {% endfor %}
+                            <td>
+                                <input form="apply" type="checkbox" class="form-check"
+                                    name="movies[]" value="{{r.get('id')}}" />
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <p>No results to show</p>
+                        {% endif %}
+                    </table>
+                    <!-- end Movies -->
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
