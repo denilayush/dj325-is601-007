@@ -35,7 +35,11 @@
                         height="100"></td>
                     {% endif %}
                     
-                    {% if k != "image_url" %}
+                    {% if k == "user_name" %}
+                    <td><a href="{{ url_for('movies.profileview') }}?id={{ r['user_id'] }}&page=associations">{{v}}</a></td>
+                    {% endif %}
+                    
+                    {% if k != "image_url" and k != "user_name" %}
                     <td>{{ v }}</td>
                     {% endif %}
 

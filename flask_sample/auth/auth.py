@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, flash, redirect, url_for,current_app, session
+from flask import Blueprint, render_template, flash, redirect, url_for,current_app, session,request
 from auth.forms import LoginForm, ProfileForm, RegisterForm
 from sql.db import DB
-
+from roles.permissions import admin_permission
 from flask_login import login_user, login_required, logout_user, current_user
 from auth.models import User
 from flask_bcrypt import Bcrypt

@@ -326,7 +326,7 @@ def watch():
         print(result.status)
         if result.status and result.rows:
             rows = result.rows
-            movies_count = " - "+str(len(rows))+" movies in the list"
+            movies_count = " - "+str(len(rows))+" movies "
             print(rows)
         else:
             movies_count="- No movies to display"
@@ -436,7 +436,7 @@ def associations():
     except Exception as e:
         print(e)
         flash("Error getting movie records", "danger")
-    if searchForm.limit.data:
+    if searchForm.limit.data and searchForm.limit.data>0 and searchForm.limit.data<=100:
         limit = searchForm.limit.data
     else:
         limit = 10
@@ -593,3 +593,27 @@ def apply():
     if "movies" in args:
         del args["movies"]
     return redirect(url_for("movies.assign", **args))
+
+
+
+
+@movies.route("/profileview", methods=["GET", "POST"])
+@admin_permission.require(http_exception=403)
+def profileview():
+    id = request.args.get("id")
+    if id:
+        try:
+            result = DB.selectOne(
+                "SELECT username,created,modified FROM IS601_Users WHERE id = %s",
+                id
+            )
+            if result.status :
+                row = result.row
+                print(row)
+        except Exception as e:
+            flash(str(e),"danger")
+            return redirect(url_for("movies.associations"))
+    else:
+        flash("No id","danger")
+        return redirect(url_for("movies.associations"))
+    return render_template("profile_view.html",row=row)
