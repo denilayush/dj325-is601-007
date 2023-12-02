@@ -254,10 +254,13 @@ def delete():
     args = {**request.args}
     if id:
         try:
+            # Delete the movie associations first record from the database
+            result = DB.delete("DELETE FROM IS601_UsersAssociation WHERE movie_id = %s", id)
+            if result.status:    
             # Delete the movie record from the database
-            result = DB.delete("DELETE FROM IS601_Movies WHERE id = %s", id)
-            if result.status:
-                flash("Deleted movie record", "success")
+                result = DB.delete("DELETE FROM IS601_Movies WHERE id = %s", id)
+                if result.status:
+                    flash("Deleted movie record", "success")
         except Exception as e:
             flash(f"Error deleting movie record: {e}", "danger")
         del args["id"]
