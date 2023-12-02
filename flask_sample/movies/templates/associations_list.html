@@ -4,16 +4,12 @@
 <!-- content -->
 {% block content %}
 {% from "_formhelpers.html" import render_field %}
-{% from "_table_helper.html" import render_table %}
-
+{% from "_table_helper_for_associations.html" import render_table %}
+<!-- dj325 29/11/23 -->
 {% set view = "movies.view" %}
-{% set edit = "movies.edit" %}
-{% set delete = "movies.delete" %}
-<!-- added this to add movies in Watch Later -->
-<!-- {#set associate = "movies.associate" #} -->
-
+{% set remove = "movies.remove" %}
+{% set dissociate = "movies.dissociate" %}
 <div class="container-fluid">
-
     <form method="GET">
         <div class="row " style="align-items: end;">
             {% for field in form %}
@@ -29,7 +25,6 @@
             </div>
         </div>
     </form>
-
-    {{ render_table(rows, "Movies", ["id", "api_id"], view, edit, delete, associate, None,"table-striped table-bordered table-hover",current_user,page) }}
+    {{ render_table(rows, "Associations "+(associations_count) + "- Showing "+ rows|length|string +" result" , ["id","api_id","movie_id","user_id"], view, None, None,dissociate,None,"table-striped table-bordered table-hover",None,None) }}
 </div>
 {% endblock %}
