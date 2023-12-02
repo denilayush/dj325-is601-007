@@ -23,6 +23,6 @@
             </div>
         </div>
     </form>
-    {{ render_table(rows, "Total Not Associated Movies "+(not_associations_count), ["id","api_id","movie_id","user_id"], view, None, None,None,None,"table-striped table-bordered table-hover",current_user,page) }}
+    {{ render_table(rows, "Total Not Associated Movies "+(not_associations_count) + "- Showing "+ rows|length|string +" result" , ["id","api_id","movie_id","user_id"], view, None, None,None,None,"table-striped table-bordered table-hover",current_user,page) }}
 </div>
 {% endblock %}
