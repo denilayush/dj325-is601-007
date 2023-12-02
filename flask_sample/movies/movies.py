@@ -370,12 +370,12 @@ def associate():
         flash("No ID present for Association", "warning")
     # return redirect(url_for("movies.list", **args))
     # updated this to get back to the same query
-    if "view" in page:
+    if page and "view" in page:
         return redirect(url_for("movies.view",**args))
-    if page == "watch":
+    if page and page == "watch":
         return redirect(url_for("movies.watch",**args))
     query_params = request.referrer
-    return redirect(url_for("query_params"))
+    return redirect(url_for("movies.list"))
 
 #dj325 30/11/23 remove all watch list items
 @movies.route("/remove", methods=["GET"])
