@@ -482,7 +482,7 @@ def notassociated():
     searchForm = movieFilterForm(request.args)
     query = """SELECT m.id, m.title AS movie_title, title_type, release_date, image_url
 FROM IS601_Movies m
-LEFT JOIN IS601_UsersAssociation ua ON m.id = ua.movie_id
+LEFT JOIN IS601_UsersAssociation ua ON m.id = ua.movie_id AND ua.is_active = 1
 WHERE ua.movie_id IS NULL 
     """
     args = {}
