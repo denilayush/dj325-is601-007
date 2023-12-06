@@ -429,22 +429,38 @@ def associations():
         args["user_name"] = f"%{searchForm.user_name.data}%"
 
     query += " GROUP BY m.id, m.title, m.image_url, u.username, user_counts.total_count"
-    
+    if searchForm.limit.data and searchForm.limit.data>0 and searchForm.limit.data<=100:
+        limit = searchForm.limit.data
+        query+= f" LIMIT {limit}"
+    else:
+        limit = 10
+        query+= f" LIMIT 10"
+
     print(query,args)
     try:
         result = DB.selectAll(query, args)
         if result.status and result.rows:
             rows = result.rows
             print("debug", rows)
+        count = DB.selectOne(""" SELECT COUNT(m.id) AS `count`
+    FROM IS601_Movies m
+    LEFT JOIN IS601_UsersAssociation ua ON m.id = ua.movie_id AND ua.is_active = 1
+    LEFT JOIN IS601_Users u ON ua.user_id = u.id
+    LEFT JOIN (
+        SELECT movie_id, COUNT(user_id) AS total_count
+        FROM IS601_UsersAssociation
+        WHERE is_active = 1
+        GROUP BY movie_id
+    ) AS user_counts ON m.id = user_counts.movie_id
+    WHERE ua.user_id IS NOT NULL LIMIT 0,100""" , )
+        if count.status:
+            TotalCount = count.row["count"]
     except Exception as e:
         print(e)
         flash("Error getting movie records", "danger")
-    if searchForm.limit.data and searchForm.limit.data>0 and searchForm.limit.data<=100:
-        limit = searchForm.limit.data
-    else:
-        limit = 10
+    
     #print(rows[0])
-    return render_template("associations_list.html", rows=rows[:limit],page="list",associations_count = str(len(rows)), form=searchForm)
+    return render_template("associations_list.html", rows=rows,page="list",associations_count = str(TotalCount), form=searchForm)
 
 
 #dj325 01/12/23 page for assiciation of a movie to a user
@@ -482,11 +498,12 @@ def notassociated():
     searchForm = movieFilterForm(request.args)
     query = """SELECT m.id, m.title AS movie_title, title_type, release_date, image_url
 FROM IS601_Movies m
-LEFT JOIN IS601_UsersAssociation ua ON m.id = ua.movie_id
+LEFT JOIN IS601_UsersAssociation ua ON m.id = ua.movie_id AND ua.is_active = 1
 WHERE ua.movie_id IS NULL 
     """
     args = {}
     rows = []
+    TotalCount = 0
     # dj325 01/12/23
     if searchForm.title.data:
         query += " AND m.title LIKE %(title)s"
@@ -504,8 +521,11 @@ WHERE ua.movie_id IS NULL
     # dj325 01/12/23
     if searchForm.sort.data and searchForm.order.data:
         query += f" ORDER BY {searchForm.sort.data} {searchForm.order.data}"
-    
-
+    if searchForm.limit.data:
+        limit = searchForm.limit.data
+        query+= f" LIMIT {limit}"
+    else:
+        query+= " LIMIT 10"
     if searchForm.validate_on_submit():
         pass
     else:
@@ -517,15 +537,18 @@ WHERE ua.movie_id IS NULL
         if result.status and result.rows:
             rows = result.rows
             print("debug", rows)
+        count = DB.selectOne("""SELECT COUNT(m.id) AS `count`
+        FROM IS601_Movies m
+        LEFT JOIN IS601_UsersAssociation ua ON m.id = ua.movie_id AND ua.is_active = 1
+        WHERE ua.movie_id IS NULL """,)
+        TotalCount = count.row["count"]
+        # print(TotalCount,"This is total count")
     except Exception as e:
         print(e)
         flash("Error getting movie records", "danger")
-    if searchForm.limit.data:
-        limit = searchForm.limit.data
-    else:
-        limit = 10
+    
     #print(rows[0])
-    return render_template("not_associated_list.html", rows=rows[:limit],page="notassociated",not_associations_count = str(len(rows)), form=searchForm)
+    return render_template("not_associated_list.html", rows=rows,page="notassociated",not_associations_count = str(TotalCount), form=searchForm)
 
 
 
