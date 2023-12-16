@@ -62,7 +62,7 @@ def fake_donation_2(client, rand_org):
                  "o":f"{rand_org}",
                  "it":'test cheese',
                  "iq":'5',
-                 "dd":'2023-10-31'})
+                 "dd":'2023-11-31'})
     assert result.insert_id > 0, "failed to insert record"
     resp = client.get(f"/donations/edit?id={result.insert_id}")
     global fake_id_2
@@ -90,7 +90,7 @@ def test_donation_edit(fake_donation_2, rand_org, client):
         "item_name":"test cheese 2",
         "item_quantity": "1",
         "item_description": "",
-        "donation_date": "2023-10-30"
+        "donation_date": "2023-11-30"
     }
     resp = client.post(f"/donations/edit?id={fake_id_2}", data=test_dict, follow_redirects=True)
     soup = BeautifulSoup(resp.data, "html.parser")
