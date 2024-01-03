@@ -1,7 +1,7 @@
 {% from "_dropdown_nav.html" import dropdown_nav %}
 <nav class="navbar navbar-expand-lg bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Sample</a>
+        <a class="navbar-brand" href="{{url_for('movies.list')}}">Movie Hive</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
             data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
             aria-expanded="false" aria-label="Toggle navigation">
@@ -17,27 +17,6 @@
                     <a class="nav-link" href="{{url_for('auth.register')}}">Register</a>
                 </li>
                 {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{{url_for('auth.landing_page')}}">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{url_for('auth.profile')}}">Profile</a>
-                </li>
-                <!-- samples nav -->
-                {% set samples = [
-                ("sample.add", "Add"),
-                ("sample.list", "List"),
-                ] %}
-                {{dropdown_nav("Samples", samples)}}
-                <!-- roles nav (requires admin )-->
-                {% if current_user.has_role("Admin") %}
-                {% set roles = [
-                ("roles.add", "Add"),
-                ("roles.list", "List"),
-                ("roles.assign", "Assign")
-                ] %}
-                {{dropdown_nav("Roles", roles)}}
-                {% endif %}
                 <!-- movies nav (requires admin )-->
                 {% if current_user.has_role("Admin") %}
                 {% set movies = [
@@ -55,6 +34,24 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{url_for('auth.logout')}}">Logout</a>
                 </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('auth.profile')}}">Profile</a>
+                </li>
+                <!-- samples nav -->
+                {% if current_user.has_role("Admin") %}
+                {% set samples = [
+                ("sample.add", "Add"),
+                ("sample.list", "List"),
+                ] %}
+                {{dropdown_nav("Samples", samples)}}
+                <!-- roles nav (requires admin )-->
+                {% set roles = [
+                ("roles.add", "Add"),
+                ("roles.list", "List"),
+                ("roles.assign", "Assign")
+                ] %}
+                {{dropdown_nav("Roles", roles)}}
                 {% endif %}
 
             </ul>
