@@ -74,7 +74,7 @@ def login():
                             # store user object in session as json
                             session["user"] = user.toJson()
                             flash("Log in successful", "success")
-                            return redirect(url_for("auth.landing_page"))
+                            return redirect(url_for("movies.list"))
                         else:
                             flash("Error logging in", "danger")
                     else:
@@ -103,7 +103,7 @@ def logout():
 
     # Tell Flask-Principal the user is anonymous
     identity_changed.send(current_app._get_current_object(),
-                          identity=AnonymousIdentity())
+                        identity=AnonymousIdentity())
     flash("Successfully logged out", "success")
     return redirect(url_for("auth.login"))
 
